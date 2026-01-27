@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
+import react from '@vitejs/plugin-react'
 import dts from 'vite-plugin-dts'
 
 export default defineConfig(({ command }) => ({
@@ -9,6 +10,7 @@ export default defineConfig(({ command }) => ({
         allowedHosts: true,
     },
     plugins: [
+        react(),
         dts({
             insertTypesEntry: true,
             rollupTypes: true,
@@ -16,7 +18,7 @@ export default defineConfig(({ command }) => ({
     ],
     build: {
         lib: {
-            entry: resolve(__dirname, 'src/index.ts'),
+            entry: resolve(__dirname, 'src/JsonTreeView.tsx'),
             name: 'ReactJsonTreeview',
             formats: ['es', 'cjs'],
             fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,

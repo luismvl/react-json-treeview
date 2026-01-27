@@ -22,7 +22,8 @@
         "lint": "eslint src/ dev/",
         "lint:fix": "eslint src/ dev/ --fix",
         "format": "prettier --write \"src/**/*.{ts,tsx}\" \"dev/**/*.{ts,tsx}\"",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "vitest run",
+        "test:watch": "vitest"
     },
     "author": "",
     "license": "MIT",
@@ -41,7 +42,8 @@
         "typescript": "^5.8.2",
         "typescript-eslint": "^8.53.1",
         "vite": "^7.3.1",
-        "vite-plugin-dts": "^4.5.4"
+        "vite-plugin-dts": "^4.5.4",
+        "vitest": "^3.2.4"
     },
     "dependencies": {
         "@vitejs/plugin-react": "^5.1.2"

@@ -26,3 +26,5 @@ coverage/
 
 # Tarball (from npm pack)
 *.tgz
+
+_notes
