@@ -50,7 +50,7 @@ export function TreeNode({
         <div className="jt-node jt-branch" data-path={pathKey}>
             <div
                 className="jt-row"
-                style={{ paddingLeft: depth * indentSize }}
+                style={{ paddingLeft: depth * indentSize || 4 }}
                 onClick={() => {
                     onToggle(pathKey)
                     onNodeClick?.(path, value)
