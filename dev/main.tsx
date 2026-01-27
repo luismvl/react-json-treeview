@@ -28,6 +28,7 @@ function App() {
                 onNodeClick={(path, value) => {
                     console.log('Clicked:', path.join('.'), value)
                 }}
+                theme="light"
             />
 
             <h2>Dark Theme, No Search, No Breadcrumb</h2>
