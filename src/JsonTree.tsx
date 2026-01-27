@@ -7,6 +7,7 @@ interface TreeNodeProps {
     expandedPaths: Set<string>
     onToggle: (path: string) => void
     indentSize: number
+    onNodeClick?: (path: string[], value: JsonValue) => void
 }
 
 export function TreeNode({
@@ -16,6 +17,7 @@ export function TreeNode({
     expandedPaths,
     onToggle,
     indentSize,
+    onNodeClick,
 }: TreeNodeProps) {
     const pathKey = path.join('.')
     const isExpanded = expandedPaths.has(pathKey)
@@ -31,6 +33,7 @@ export function TreeNode({
                 style={{
                     paddingLeft: depth * indentSize,
                 }}
+                onClick={() => onNodeClick?.(path, value)}
             >
                 {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
                 <span className={`jt-value jt-${getValueType(value)}`}>{formatValue(value)}</span>
@@ -47,7 +50,10 @@ export function TreeNode({
             <div
                 className="jt-row"
                 style={{ paddingLeft: depth * indentSize }}
-                onClick={() => onToggle(pathKey)}
+                onClick={() => {
+                    onToggle(pathKey)
+                    onNodeClick?.(path, value)
+                }}
             >
                 <span className="jt-toggle">{isEmpty ? ' ' : isExpanded ? '▼' : '▶'}</span>
                 {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
@@ -67,6 +73,7 @@ export function TreeNode({
                             expandedPaths={expandedPaths}
                             onToggle={onToggle}
                             indentSize={indentSize}
+                            onNodeClick={onNodeClick}
                         />
                     ))}
                 </>

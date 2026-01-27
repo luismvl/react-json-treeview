@@ -33,6 +33,7 @@
 .jt-row {
     display: flex;
     align-items: center;
+    gap: 0.3em;
     cursor: pointer;
     padding: 2px 4px;
     border-radius: 3px;

@@ -9,10 +9,13 @@ export function JsonTreeView({
     className,
     indentSize = 20,
     fontSize = 13,
+    searchable = true,
+    showBreadcrumb = true,
+    onNodeClick,
 }: JsonTreeViewProps) {
     const [expandedPaths, setExpandedPaths] = useState<Set<string>>(() => {
         if (defaultExpanded) return getInitialExpandedPaths(data)
-        return new Set()
+        return new Set(['']) // [''] this is to make root branch expanded>
     })
 
     const toggleExpand = (path: string) => {
@@ -33,12 +36,19 @@ export function JsonTreeView({
             data-theme={theme}
             style={{ fontSize }}
         >
+            {searchable && (
+                <div className="jt-search">
+                    <input type="text" placeholder="Search..." />
+                </div>
+            )}
+            {showBreadcrumb && <div className="jt-breadcrumb">Breadcrumb placeholder</div>}
             <TreeNode
                 value={data}
                 path={[]}
                 expandedPaths={expandedPaths}
                 onToggle={toggleExpand}
                 indentSize={indentSize}
+                onNodeClick={onNodeClick}
             />
         </div>
     )
