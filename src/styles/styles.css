@@ -4,7 +4,7 @@
     --jt-line-height: 1.5;
 
     /* Colors - Light Theme */
-    --jt-bg-color: #ffffff;
+    --jt-bg-color: #eeeeee;
     --jt-text-color: #333333;
     --jt-key-color: #0451a5;
     --jt-string-color: #067d17;
@@ -14,7 +14,7 @@
     --jt-bracket-color: #333333;
     --jt-toggle-color: #6e6e6e;
     --jt-highlight-bg: #fff3cd;
-    --jt-hover-bg: #f5f5f5;
+    --jt-hover-bg: #e4e4e4;
 }
 
 .react-json-treeview {
