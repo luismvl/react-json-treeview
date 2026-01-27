@@ -30,6 +30,7 @@ export function TreeNode({
         return (
             <div
                 className="jt-node jt-leaf"
+                data-path={pathKey}
                 style={{
                     paddingLeft: depth * indentSize,
                 }}
@@ -46,7 +47,7 @@ export function TreeNode({
     const isEmpty = entries.length === 0
 
     return (
-        <div className="jt-node jt-branch">
+        <div className="jt-node jt-branch" data-path={pathKey}>
             <div
                 className="jt-row"
                 style={{ paddingLeft: depth * indentSize }}

@@ -27,26 +27,35 @@ npm install react-json-treeview
 ## Quick Start
 
 ```tsx
-import { JsonTreeView } from 'react-json-treeview';
-import 'react-json-treeview/styles.css';
+import { JsonTreeView } from 'react-json-treeview'
+import 'react-json-treeview/styles.css'
 
 function App() {
-  const data = {
-    name: "John",
-    age: 30,
-    address: {
-      city: "New York",
-      zip: "10001"
+    const data = {
+        name: 'John',
+        age: 30,
+        address: {
+            city: 'New York',
+            zip: '10001',
+        },
     }
-  };
 
-  return <JsonTreeView data={data} />;
+    return <JsonTreeView data={data} />
 }
 ```
 
 ## Development Status
 
 This project is being built and is not yet ready for production use.
+
+## Compatibility
+
+| React Version | Status       |
+| ------------- | ------------ |
+| React 18.x    | ✅ Supported |
+| React 19.x    | ✅ Supported |
+
+**Note:** This library uses `forwardRef` for the imperative API to maintain compatibility with React 18. While `forwardRef` is deprecated in React 19 (in favor of `ref` as a prop), it remains fully functional. We will migrate to the new pattern when React 18 reaches end-of-life.
 
 ## License
 

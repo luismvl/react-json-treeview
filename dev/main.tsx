@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import ReactDOM from 'react-dom/client'
 import { JsonTreeView } from '../src/JsonTreeView'
 import '../src/styles/styles.css'
+import { JsonTreeViewRef } from '../src/types'
 
 const sampleData = {
     name: 'John',
@@ -15,6 +16,8 @@ const sampleData = {
 }
 
 function App() {
+    const treeRef = useRef<JsonTreeViewRef>(null)
+
     return (
         <div style={{ padding: 20, backgroundColor: '#282c34', color: 'white' }}>
             <h1>JSON Tree Viewer - Dev</h1>
@@ -37,6 +40,35 @@ function App() {
 
             <h2>Collapsed by Default</h2>
             <JsonTreeView data={sampleData} defaultExpanded={false} />
+
+            <h2>Phase 8: Imperative API Tests</h2>
+            <div
+                style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 8,
+                    marginBottom: 8,
+                }}
+            >
+                <button onClick={() => treeRef.current?.expandAll()}>Expand All</button>
+                <button onClick={() => treeRef.current?.collapseAll()}>Collapse All</button>
+                <button onClick={() => treeRef.current?.scrollToPath(['address', 'city'])}>
+                    Scroll to Address.City
+                </button>
+                <button onClick={() => treeRef.current?.scrollToPath(['hobbies', '1'])}>
+                    Scroll to Hobbies[1]
+                </button>
+                <button onClick={() => treeRef.current?.focusSearch()}>Focus Search</button>
+                <button
+                    onClick={() => {
+                        const paths = treeRef.current?.getExpandedPaths()
+                        console.log('Expanded paths:', Array.from(paths || []))
+                    }}
+                >
+                    Log Expanded Paths
+                </button>
+            </div>
+            <JsonTreeView data={sampleData} ref={treeRef} />
         </div>
     )
 }
