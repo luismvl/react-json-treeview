@@ -23,7 +23,8 @@
         "noEmit": true
     },
     "include": [
-        "src"
+        "src",
+        "dev"
     ],
     "exclude": [
         "node_modules",

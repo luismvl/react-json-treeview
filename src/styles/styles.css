@@ -1,0 +1,106 @@
+.react-json-treeview {
+    /* Layout */
+    --js-font-family: 'SF Mono', Monaco, Menlo, Consolas, monospace;
+    --jt-line-height: 1.5;
+
+    /* Colors - Light Theme */
+    --jt-bg-color: #ffffff;
+    --jt-text-color: #333333;
+    --jt-key-color: #0451a5;
+    --jt-string-color: #067d17;
+    --jt-number-color: #098658;
+    --jt-boolean-color: #0451a5;
+    --jt-null-color: #0451a5;
+    --jt-bracket-color: #333333;
+    --jt-toggle-color: #6e6e6e;
+    --jt-highlight-bg: #fff3cd;
+    --jt-hover-bg: #f5f5f5;
+}
+
+.react-json-treeview {
+    font-family: var(--js-font-family);
+    background: var(--jt-bg-color);
+    color: var(--jt-text-color);
+    line-height: var(--jt-line-height);
+    padding: 8px;
+    overflow: auto;
+}
+
+.jt-node {
+    white-space: nowrap;
+}
+
+.jt-row {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+}
+
+.jt-row:hover {
+    background: var(--jt-hover-bg);
+}
+
+.jt-toggle {
+    width: 1em;
+    display: inline-block;
+    color: var(--jt-toggle-color);
+    user-select: none;
+}
+
+.jt-key {
+    color: var(--jt-key-color);
+}
+
+.jt-value-jt-sring {
+    color: var(--jt-string-color);
+}
+.jt-value.jt-number {
+    color: var(--jt-number-color);
+}
+.jt-value.jt-boolean {
+    color: var(--jt-boolean-color);
+}
+.jt-value.jt-null {
+    color: var(--jt-null-color);
+    font-style: italic;
+}
+
+.jt-bracket {
+    color: var(--jt-bracket-color);
+}
+.jt-collapsed-indicator {
+    color: var(--jt-toggle-color);
+    margin: 0 2px;
+}
+
+/* Dark Theme */
+.react-json-treeview[data-theme='dark'] {
+    --jt-bg-color: #1e1e1e;
+    --jt-text-color: #d4d4d4;
+    --jt-key-color: #9cdcfe;
+    --jt-string-color: #ce9178;
+    --jt-number-color: #b5cea8;
+    --jt-boolean-color: #569cd6;
+    --jt-null-color: #569cd6;
+    --jt-bracket-color: #d4d4d4;
+    --jt-toggle-color: #808080;
+    --jt-hover-bg: #2d2d2d;
+}
+
+/* Auto Theme (follows system preference) */
+@media (prefers-color-scheme: dark) {
+    .react-json-treeview[data-theme='auto'] {
+        --jt-bg-color: #1e1e1e;
+        --jt-text-color: #d4d4d4;
+        --jt-key-color: #9cdcfe;
+        --jt-string-color: #ce9178;
+        --jt-number-color: #b5cea8;
+        --jt-boolean-color: #569cd6;
+        --jt-null-color: #569cd6;
+        --jt-bracket-color: #d4d4d4;
+        --jt-toggle-color: #808080;
+        --jt-hover-bg: #2d2d2d;
+    }
+}

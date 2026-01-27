@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { JsonTreeView } from '../src/JsonTreeView'
+import '../src/styles/styles.css'
 
 const sampleData = {
     name: 'John',
@@ -17,7 +18,7 @@ function App() {
     return (
         <div style={{ padding: 20 }}>
             <h1>JSON Tree Viewer - Dev</h1>
-            <JsonTreeView data={sampleData} defaultExpanded />
+            <JsonTreeView data={sampleData} />
         </div>
     )
 }

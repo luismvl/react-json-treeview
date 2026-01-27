@@ -18,7 +18,7 @@ export function TreeNode({
     indentSize,
 }: TreeNodeProps) {
     const pathKey = path.join('.')
-    const isExpanded = expandedPaths.has(pathKey) || path.length == 0
+    const isExpanded = expandedPaths.has(pathKey)
     const isExpandable =
         value !== null && typeof value == 'object' && Object.entries(value).length > 0
     const depth = path.length
@@ -32,7 +32,7 @@ export function TreeNode({
                     paddingLeft: depth * indentSize,
                 }}
             >
-                {keyName !== undefined && <span className="jt-key">{keyName}:</span>}
+                {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
                 <span className={`jt-value jt-${getValueType(value)}`}>{formatValue(value)}</span>
             </div>
         )
@@ -50,7 +50,8 @@ export function TreeNode({
                 onClick={() => onToggle(pathKey)}
             >
                 <span className="jt-toggle">{isEmpty ? ' ' : isExpanded ? '▼' : '▶'}</span>
-                {keyName !== undefined && <span className="jt-key"> {keyName}: </span>}
+                {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
+
                 <span className="jt-bracket">{isArray ? '[' : '{'}</span>
                 {!isExpanded && <span className="jt-collapse-indicator">...</span>}
                 {!isExpanded && <span className="jt-bracket">{isArray ? ']' : '}'}</span>}
@@ -70,9 +71,11 @@ export function TreeNode({
                     ))}
                 </>
             )}
-            <div style={{ paddingLeft: depth * indentSize }}>
-                <span className="jt-bracket">{isArray ? ']' : '}'}</span>
-            </div>
+            {isExpanded && (
+                <div style={{ paddingLeft: depth * indentSize }}>
+                    <span className="jt-bracket">{isArray ? ']' : '}'}</span>
+                </div>
+            )}
         </div>
     )
 }

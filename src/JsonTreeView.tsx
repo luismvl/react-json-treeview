@@ -25,6 +25,8 @@ export function JsonTreeView({
         })
     }
 
+    console.log(expandedPaths)
+
     return (
         <div
             className={`react-json-treeview ${className || ''}`}
@@ -51,7 +53,7 @@ export function getInitialExpandedPaths(value: JsonValue, currentPath: string[] 
             : Object.entries(value)
 
         const pathKey = currentPath.join('.')
-        if (pathKey && entries.length > 0) paths.add(pathKey)
+        if (entries.length > 0) paths.add(pathKey)
 
         for (const [key, val] of entries) {
             const childPaths = getInitialExpandedPaths(val, [...currentPath, key])
