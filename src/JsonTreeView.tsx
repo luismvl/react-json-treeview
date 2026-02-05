@@ -1,9 +1,25 @@
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import {
+    forwardRef,
+    useCallback,
+    useEffect,
+    useImperativeHandle,
+    useMemo,
+    useRef,
+    useState,
+} from 'react'
 import { TreeNode } from './JsonTree'
 import { SearchBar } from './SearchBar'
 import { Breadcrumb } from './Breadcrumb'
 import type { JsonTreeViewProps, JsonTreeViewRef, JsonValue } from './types'
+import { getAllExpandablePaths } from './getAllExpandablePaths'
 import { useSearch } from './useSearch'
+
+type VisibleNode = {
+    pathKey: string
+    depth: number
+    isExpandable: boolean
+    isExpanded: boolean
+}
 
 export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(function (props, ref) {
     const {
@@ -26,6 +42,7 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
     })
 
     const scrollContainerRef = useRef<HTMLDivElement>(null)
+    const rootRef = useRef<HTMLDivElement>(null)
 
     const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -36,6 +53,48 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
 
     const [visiblePath, setVisiblePath] = useState<string[]>([])
     const observerStateRef = useRef<Map<string, number> | null>(null)
+
+    const [focusedPathKey, setFocusedPathKey] = useState('')
+
+    const visibleNodes = useMemo<VisibleNode[]>(() => {
+        function visit(value: JsonValue, path: string[]): VisibleNode[] {
+            const pathKey = path.join('.')
+            const depth = path.length
+            const isObj = value !== null && typeof value === 'object'
+            const entries = isObj
+                ? Array.isArray(value)
+                    ? value.map((v, i) => [String(i), v] as const)
+                    : Object.entries(value)
+                : []
+            const isExpandable = isObj && entries.length > 0
+            const isExpanded = isExpandable && expandedPaths.has(pathKey)
+
+            const nodes: VisibleNode[] = [{ pathKey, depth, isExpandable, isExpanded }]
+            if (isExpandable && isExpanded) {
+                for (const [key, val] of entries) {
+                    nodes.push(...visit(val, [...path, key]))
+                }
+            }
+            return nodes
+        }
+
+        return visit(data, [])
+    }, [data, expandedPaths])
+
+    const visibleKeys = useMemo(() => new Set(visibleNodes.map((n) => n.pathKey)), [visibleNodes])
+
+    const renderFocusedPathKey = useMemo(() => {
+        if (visibleKeys.has(focusedPathKey)) return focusedPathKey
+        if (focusedPathKey === '' && visibleNodes.length > 0) return visibleNodes[0].pathKey
+
+        let key = focusedPathKey
+        while (key) {
+            const parent = key.split('.').slice(0, -1).join('.')
+            if (visibleKeys.has(parent)) return parent
+            key = parent
+        }
+        return visibleKeys.has('') ? '' : (visibleNodes[0]?.pathKey ?? '')
+    }, [focusedPathKey, visibleKeys, visibleNodes])
 
     const toggleExpand = (path: string) => {
         setExpandedPaths((prev) => {
@@ -89,6 +148,24 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
     useEffect(() => {
         onSearchChangeRef.current?.(query, matches)
     }, [query, matches])
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key.toLowerCase() !== 'f') return
+            if (!e.ctrlKey && !e.metaKey) return
+
+            const root = rootRef.current
+            if (!root) return
+            const target = e.target as Node | null
+            if (target && !root.contains(target)) return
+
+            e.preventDefault()
+            searchInputRef.current?.focus()
+        }
+
+        document.addEventListener('keydown', handleKeyDown)
+        return () => document.removeEventListener('keydown', handleKeyDown)
+    }, [])
 
     const visiblePathThrottleRef = useRef<{
         lastUpdateTs: number
@@ -201,17 +278,32 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
         }
     }, [])
 
+    useEffect(() => {
+        const root = scrollContainerRef.current
+        if (!root) return
+
+        const row = root.querySelector<HTMLElement>(`.jt-row[data-path="${renderFocusedPathKey}"]`)
+        if (!row) return
+
+        row.focus({ preventScroll: true })
+        row.scrollIntoView({ block: 'nearest' })
+    }, [renderFocusedPathKey])
+
     const handleNext = () => {
         if (total === 0) return
         const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % total
-        scrollToPathInternal(matches[nextIndex].path)
+        const matchPath = matches[nextIndex].path
+        scrollToPathInternal(matchPath)
+        setFocusedPathKey(matchPath.join('.'))
         next()
     }
 
     const handlePrevious = () => {
         if (total === 0) return
         const nextIndex = currentIndex < 0 ? total - 1 : (currentIndex - 1 + total) % total
-        scrollToPathInternal(matches[nextIndex].path)
+        const matchPath = matches[nextIndex].path
+        scrollToPathInternal(matchPath)
+        setFocusedPathKey(matchPath.join('.'))
         previous()
     }
 
@@ -247,13 +339,17 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
             className={`react-json-treeview ${className || ''}`}
             data-theme={theme}
             style={{ fontSize }}
+            ref={rootRef}
         >
             {(searchable || showBreadcrumb) && (
                 <div className="jt-toolbar">
                     {showBreadcrumb && (
                         <Breadcrumb
                             path={visiblePath}
-                            onCrumbClick={(p) => scrollToPathInternal(p, { align: 'start' })}
+                            onCrumbClick={(p) => {
+                                scrollToPathInternal(p, { align: 'start' })
+                                setFocusedPathKey(p.join('.'))
+                            }}
                         />
                     )}
                     {searchable && (
@@ -270,7 +366,100 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
                     )}
                 </div>
             )}
-            <div className="jt-scroll" ref={scrollContainerRef}>
+            <div
+                className="jt-scroll"
+                ref={scrollContainerRef}
+                role="tree"
+                aria-label="JSON Tree View"
+                onClickCapture={(e) => {
+                    const target = e.target as HTMLElement | null
+                    const row = target?.closest?.('.jt-row[data-path]') as HTMLElement | null
+                    if (!row) return
+                    const key = row.getAttribute('data-path') ?? ''
+                    setFocusedPathKey(key)
+                    row.focus({ preventScroll: true })
+                }}
+                onFocusCapture={(e) => {
+                    const target = e.target as HTMLElement | null
+                    const row = target?.closest?.('.jt-row[data-path]') as HTMLElement | null
+                    if (!row) return
+                    const key = row.getAttribute('data-path') ?? ''
+                    setFocusedPathKey(key)
+                }}
+                onKeyDown={(e) => {
+                    const idx = visibleNodes.findIndex((n) => n.pathKey === renderFocusedPathKey)
+                    const current = idx >= 0 ? visibleNodes[idx] : visibleNodes[0]
+                    if (!current) return
+
+                    const focusAt = (i: number) => {
+                        const node = visibleNodes[Math.max(0, Math.min(visibleNodes.length - 1, i))]
+                        if (node) setFocusedPathKey(node.pathKey)
+                    }
+
+                    const toggleCurrent = () => {
+                        if (!current.isExpandable) return
+                        toggleExpand(current.pathKey)
+                    }
+
+                    if (e.key === 'ArrowDown') {
+                        e.preventDefault()
+                        focusAt(idx < 0 ? 0 : idx + 1)
+                        return
+                    }
+                    if (e.key === 'ArrowUp') {
+                        e.preventDefault()
+                        focusAt(idx < 0 ? 0 : idx - 1)
+                        return
+                    }
+                    if (e.key === 'Home') {
+                        e.preventDefault()
+                        focusAt(0)
+                        return
+                    }
+                    if (e.key === 'End') {
+                        e.preventDefault()
+                        focusAt(visibleNodes.length - 1)
+                        return
+                    }
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        toggleCurrent()
+                        return
+                    }
+                    if (e.key === 'Escape') {
+                        if (externalSearchQuery !== undefined) return
+                        if (!internalQuery) return
+                        e.preventDefault()
+                        setInternalQuery('')
+                        searchInputRef.current?.focus()
+                        return
+                    }
+                    if (e.key === 'ArrowRight') {
+                        if (!current.isExpandable) return
+                        e.preventDefault()
+                        if (!current.isExpanded) {
+                            setExpandedPaths((prev) => new Set(prev).add(current.pathKey))
+                            return
+                        }
+                        return
+                    }
+                    if (e.key === 'ArrowLeft') {
+                        e.preventDefault()
+                        if (current.isExpandable && current.isExpanded && current.pathKey !== '') {
+                            setExpandedPaths((prev) => {
+                                const next = new Set(prev)
+                                next.delete(current.pathKey)
+                                return next
+                            })
+                            return
+                        }
+
+                        if (!current.pathKey) return
+                        const parent = current.pathKey.split('.').slice(0, -1).join('.')
+                        if (visibleKeys.has(parent)) setFocusedPathKey(parent)
+                    }
+                }}
+            >
                 <TreeNode
                     value={data}
                     path={[]}
@@ -280,6 +469,7 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
                     onNodeClick={onNodeClick}
                     searchQuery={query}
                     currentMatch={currentMatch}
+                    focusedPathKey={renderFocusedPathKey}
                 />
             </div>
         </div>
@@ -287,29 +477,3 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
 })
 
 JsonTreeView.displayName = 'JsonTreeView'
-
-/**
- * Recursively get all expandable paths in the JSON data
- * @param value The JSON value
- * @param currentPath The current path (used in recursion)
- * @returns A set of expandable paths
- */
-export function getAllExpandablePaths(value: JsonValue, currentPath: string[] = []): Set<string> {
-    const paths = new Set<string>()
-
-    if (value !== null && typeof value === 'object') {
-        const entries = Array.isArray(value)
-            ? value.map((v, i) => [String(i), v] as const)
-            : Object.entries(value)
-
-        const pathKey = currentPath.join('.')
-        if (entries.length > 0) paths.add(pathKey)
-
-        for (const [key, val] of entries) {
-            const childPaths = getAllExpandablePaths(val, [...currentPath, key])
-            childPaths.forEach((p) => paths.add(p))
-        }
-    }
-
-    return paths
-}

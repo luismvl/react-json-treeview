@@ -59,6 +59,16 @@ The viewer is structured as:
 
 Breadcrumb tracking observes `.jt-row[data-path]` elements.
 
+### Keyboard Navigation
+
+Keyboard navigation is handled on `.jt-scroll` using a visible-node list computed from `data` + `expandedPaths`:
+
+- `Ctrl/Cmd + F`: focus search (scoped to when the event target is inside the component)
+- `↑/↓`, `Home/End`: move focus across visible nodes
+- `→`: expand or move to first child
+- `←`: collapse or move to parent
+- `Enter`/`Space`: toggle expand/collapse
+
 ### Type Guards
 
 Use `typeof` and `Array.isArray()` for JSON type detection:
@@ -85,6 +95,7 @@ Prefix all classes with `jt-` (e.g., `jt-node`, `jt-key`, `jt-value`, `jt-null`)
 - **Zero runtime dependencies** - Only React as peer dependency
 - **CSS Variables for theming** - No CSS-in-JS libraries
 - **Functional components only** - Use hooks, no class components
+- **Fast Refresh-safe exports** - Keep React component modules exporting components only; move non-component helpers (e.g. `getAllExpandablePaths`) into separate files to avoid Vite HMR invalidation warnings.
 
 ## Build Configuration
 
@@ -97,7 +108,6 @@ Vite is configured differently for dev vs build:
 
 Per `_notes/PROGRESS.md`, these are still TODO:
 
-- Keyboard navigation (Phase 11)
 - Testing (Phase 12)
 - Documentation pass (Phase 13+)
 
