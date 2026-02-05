@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { act } from 'react'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { JsonTreeView } from '../src/JsonTreeView'
-import type { JsonTreeViewRef, JsonValue } from '../src/types'
+import type { JsonTreeViewRef, JsonValue, RenderValueFn } from '../src/types'
 
 describe('<JsonTreeView />', () => {
     it('renders primitive root values', () => {
@@ -59,6 +59,59 @@ describe('<JsonTreeView />', () => {
         const [path, value] = lastCall
         expect(path.join('.')).toBe('a.b')
         expect(value).toBe(1)
+    })
+
+    it('supports renderValue for primitive leaves', () => {
+        const data: JsonValue = { a: 1, b: 'x', c: null }
+        const renderValue = vi.fn((value, path, type) => {
+            if (type === 'number') return <span>NUM</span>
+            if (type === 'string') return <span>{`${path.join('.')}:${String(value)}`}</span>
+            return null
+        })
+
+        render(
+            <JsonTreeView
+                data={data}
+                defaultExpanded
+                showBreadcrumb={false}
+                renderValue={renderValue}
+            />
+        )
+
+        expect(screen.getByText('NUM')).toBeInTheDocument()
+        expect(screen.getByText('b:x')).toBeInTheDocument()
+        // null falls back to default rendering when renderValue returns null
+        expect(screen.getByText('null')).toBeInTheDocument()
+        expect(renderValue).toHaveBeenCalled()
+    })
+
+    it('provides renderValue context and defaultRenderer', () => {
+        const data: JsonValue = { a: 'needle', b: 'x' }
+        const renderValue = vi.fn<RenderValueFn>((_value, _path, _type, ctx) => {
+            return <span data-testid={`wrap-${ctx.pathKey}`}>{ctx.defaultRenderer()}</span>
+        })
+
+        render(
+            <JsonTreeView
+                data={data}
+                defaultExpanded
+                showBreadcrumb={false}
+                externalSearchQuery="needle"
+                renderValue={renderValue}
+            />
+        )
+
+        const callForA = renderValue.mock.calls.find((args) => args[1].join('.') === 'a')
+        expect(callForA).toBeTruthy()
+        if (!callForA) return
+
+        const ctx = callForA[3]
+        expect(ctx.pathKey).toBe('a')
+        expect(ctx.searchQuery).toBe('needle')
+        expect(ctx.isCurrentValueMatch).toBe(false)
+        expect(typeof ctx.defaultRenderer).toBe('function')
+
+        expect(screen.getByTestId('wrap-a').querySelector('mark.jt-mark')).toBeTruthy()
     })
 
     it('search highlights matches and Escape clears (uncontrolled)', () => {

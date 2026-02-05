@@ -12,6 +12,12 @@ import { useSearch } from './useSearch'
 import { useTreeKeyboardNav } from './useTreeKeyboardNav'
 import { useVisibleNodes } from './useVisibleNodes'
 
+/**
+ * Render JSON data as an interactive tree with search, keyboard navigation, and sticky breadcrumbs.
+ *
+ * Remember to import the stylesheet:
+ * `import 'react-json-treeview/styles.css'`
+ */
 export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(function (props, ref) {
     const {
         data,
@@ -25,6 +31,7 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
         onNodeClick,
         onSearchChange,
         externalSearchQuery,
+        renderValue,
     } = props
 
     const [expandedPaths, setExpandedPaths] = useState<Set<string>>(() => {
@@ -208,6 +215,7 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
                     searchQuery={query}
                     currentMatch={currentMatch}
                     focusedPathKey={resolvedFocusedKey}
+                    renderValue={renderValue}
                 />
             </div>
         </div>

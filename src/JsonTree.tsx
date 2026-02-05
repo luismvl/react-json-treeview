@@ -1,6 +1,12 @@
 import type { ReactNode } from 'react'
 import { highlightText } from './highlightText'
-import type { JsonValue, SearchMatch } from './types'
+import type {
+    JsonPrimitive,
+    JsonPrimitiveType,
+    JsonValue,
+    RenderValueFn,
+    SearchMatch,
+} from './types'
 
 interface TreeNodeProps {
     value: JsonValue
@@ -13,6 +19,7 @@ interface TreeNodeProps {
     searchQuery?: string
     currentMatch?: SearchMatch | null
     focusedPathKey?: string
+    renderValue?: RenderValueFn
 }
 
 export function TreeNode({
@@ -26,20 +33,33 @@ export function TreeNode({
     searchQuery = '',
     currentMatch = null,
     focusedPathKey = '',
+    renderValue,
 }: TreeNodeProps) {
     const pathKey = path.join('.')
     const isExpanded = expandedPaths.has(pathKey)
     const isExpandable =
-        value !== null && typeof value == 'object' && Object.entries(value).length > 0
+        value !== null && typeof value === 'object' && Object.entries(value).length > 0
     const depth = path.length
     const currentMatchPathKey = currentMatch?.path.join('.') ?? null
     const isCurrentRow = currentMatchPathKey === pathKey
     const isFocusedRow = focusedPathKey === pathKey
 
-    // Render primtive values
+    // Render primitive values
     if (!isExpandable) {
         const isCurrentValue = isCurrentRow && currentMatch?.type === 'value'
         const isCurrentKey = isCurrentRow && currentMatch?.type === 'key'
+        const isPrimitive = value === null || typeof value !== 'object'
+        const valueType: JsonPrimitiveType =
+            value === null ? 'null' : (typeof value as Exclude<JsonPrimitiveType, 'null'>)
+        const defaultRenderer = () => renderPrimitiveValue(value, searchQuery, isCurrentValue)
+        const customValue = isPrimitive
+            ? renderValue?.(value as JsonPrimitive, path, valueType, {
+                  defaultRenderer,
+                  searchQuery,
+                  isCurrentValueMatch: isCurrentValue,
+                  pathKey,
+              })
+            : null
         return (
             <div
                 className={`jt-row jt-node jt-leaf ${isCurrentRow ? 'jt-row-current' : ''} ${
@@ -61,8 +81,8 @@ export function TreeNode({
                         {highlightText(keyName, searchQuery, isCurrentKey)}:{' '}
                     </span>
                 )}
-                <span className={`jt-value jt-${getValueType(value)}`}>
-                    {renderPrimitiveValue(value, searchQuery, isCurrentValue)}
+                <span className={`jt-value jt-${valueType}`}>
+                    {customValue == null ? defaultRenderer() : customValue}
                 </span>
             </div>
         )
@@ -123,6 +143,7 @@ export function TreeNode({
                             searchQuery={searchQuery}
                             currentMatch={currentMatch}
                             focusedPathKey={focusedPathKey}
+                            renderValue={renderValue}
                         />
                     ))}
                 </>
@@ -134,11 +155,6 @@ export function TreeNode({
             )}
         </div>
     )
-}
-
-function getValueType(value: JsonValue): string {
-    if (value === null) return 'null'
-    return typeof value
 }
 
 function renderPrimitiveValue(value: JsonValue, query: string, isCurrent: boolean): ReactNode {

@@ -18,7 +18,7 @@ export default defineConfig(({ command }) => ({
     ],
     build: {
         lib: {
-            entry: resolve(__dirname, 'src/JsonTreeView.tsx'),
+            entry: resolve(__dirname, 'src/entry.ts'),
             name: 'ReactJsonTreeview',
             formats: ['es', 'cjs'],
             fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
