@@ -1,6 +1,8 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { TreeNode } from './JsonTree'
+import { SearchBar } from './SearchBar'
 import type { JsonTreeViewProps, JsonTreeViewRef, JsonValue } from './types'
+import { useSearch } from './useSearch'
 
 export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(function (props, ref) {
     const {
@@ -13,6 +15,8 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
         searchable = true,
         showBreadcrumb = true,
         onNodeClick,
+        onSearchChange,
+        externalSearchQuery,
     } = props
 
     const [expandedPaths, setExpandedPaths] = useState<Set<string>>(() => {
@@ -24,6 +28,11 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
 
     const searchInputRef = useRef<HTMLInputElement>(null)
 
+    const [internalQuery, setInternalQuery] = useState('')
+    const query = externalSearchQuery ?? internalQuery
+
+    const { matches, currentIndex, currentMatch, next, previous, total } = useSearch(data, query)
+
     const toggleExpand = (path: string) => {
         setExpandedPaths((prev) => {
             const next = new Set(prev)
@@ -32,6 +41,46 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
 
             return next
         })
+    }
+
+    const scrollToPathInternal = useCallback((path: string[]) => {
+        const ancestorPaths = new Set<string>()
+        for (let i = 1; i <= path.length; i++) {
+            const ancestorPath = path.slice(0, i).join('.')
+            ancestorPaths.add(ancestorPath)
+        }
+
+        setExpandedPaths((prev) => new Set([...prev, ...ancestorPaths]))
+
+        requestAnimationFrame(() => {
+            const pathKey = path.join('.')
+            const element = containerRef.current?.querySelector(`[data-path="${pathKey}"]`)
+            if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        })
+    }, [])
+
+    // Avoid "callback identity" loops (e.g. consumer passes an inline function that sets state).
+    const onSearchChangeRef = useRef(onSearchChange)
+    useEffect(() => {
+        onSearchChangeRef.current = onSearchChange
+    }, [onSearchChange])
+
+    useEffect(() => {
+        onSearchChangeRef.current?.(query, matches)
+    }, [query, matches])
+
+    const handleNext = () => {
+        if (total === 0) return
+        const nextIndex = currentIndex < 0 ? 0 : (currentIndex + 1) % total
+        scrollToPathInternal(matches[nextIndex].path)
+        next()
+    }
+
+    const handlePrevious = () => {
+        if (total === 0) return
+        const nextIndex = currentIndex < 0 ? total - 1 : (currentIndex - 1 + total) % total
+        scrollToPathInternal(matches[nextIndex].path)
+        previous()
     }
 
     useImperativeHandle(ref, () => ({
@@ -44,19 +93,7 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
             setExpandedPaths(new Set(['']))
         },
         scrollToPath(path) {
-            const ancestorPaths = new Set<string>()
-            for (let i = 1; i <= path.length; i++) {
-                const ancestorPath = path.slice(0, i).join('.')
-                ancestorPaths.add(ancestorPath)
-            }
-
-            setExpandedPaths((prev) => new Set([...prev, ...ancestorPaths]))
-
-            requestAnimationFrame(() => {
-                const pathKey = path.join('.')
-                const element = containerRef.current?.querySelector(`[data-path="${pathKey}"]`)
-                if (element) element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-            })
+            scrollToPathInternal(path)
         },
 
         focusSearch() {
@@ -64,6 +101,12 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
         },
         getExpandedPaths() {
             return new Set(expandedPaths)
+        },
+        nextMatch() {
+            handleNext()
+        },
+        previousMatch() {
+            handlePrevious()
         },
     }))
 
@@ -75,9 +118,16 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
             ref={containerRef}
         >
             {searchable && (
-                <div className="jt-search">
-                    <input type="text" placeholder="Search..." ref={searchInputRef} />
-                </div>
+                <SearchBar
+                    ref={searchInputRef}
+                    query={query}
+                    onQueryChange={setInternalQuery}
+                    total={total}
+                    currentIndex={currentIndex}
+                    onNext={handleNext}
+                    onPrevious={handlePrevious}
+                    disabled={externalSearchQuery !== undefined}
+                />
             )}
             {showBreadcrumb && <div className="jt-breadcrumb">Breadcrumb placeholder</div>}
             <TreeNode
@@ -87,6 +137,8 @@ export const JsonTreeView = forwardRef<JsonTreeViewRef, JsonTreeViewProps>(funct
                 onToggle={toggleExpand}
                 indentSize={indentSize}
                 onNodeClick={onNodeClick}
+                searchQuery={query}
+                currentMatch={currentMatch}
             />
         </div>
     )

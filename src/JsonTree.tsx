@@ -1,4 +1,6 @@
-import { JsonValue } from './types'
+import type { ReactNode } from 'react'
+import { highlightText } from './highlightText'
+import type { JsonValue, SearchMatch } from './types'
 
 interface TreeNodeProps {
     value: JsonValue
@@ -8,6 +10,8 @@ interface TreeNodeProps {
     onToggle: (path: string) => void
     indentSize: number
     onNodeClick?: (path: string[], value: JsonValue) => void
+    searchQuery?: string
+    currentMatch?: SearchMatch | null
 }
 
 export function TreeNode({
@@ -18,26 +22,38 @@ export function TreeNode({
     onToggle,
     indentSize,
     onNodeClick,
+    searchQuery = '',
+    currentMatch = null,
 }: TreeNodeProps) {
     const pathKey = path.join('.')
     const isExpanded = expandedPaths.has(pathKey)
     const isExpandable =
         value !== null && typeof value == 'object' && Object.entries(value).length > 0
     const depth = path.length
+    const currentMatchPathKey = currentMatch?.path.join('.') ?? null
+    const isCurrentRow = currentMatchPathKey === pathKey
 
     // Render primtive values
     if (!isExpandable) {
+        const isCurrentValue = isCurrentRow && currentMatch?.type === 'value'
+        const isCurrentKey = isCurrentRow && currentMatch?.type === 'key'
         return (
             <div
-                className="jt-node jt-leaf"
+                className={`jt-row jt-node jt-leaf ${isCurrentRow ? 'jt-row-current' : ''}`}
                 data-path={pathKey}
                 style={{
                     paddingLeft: depth * indentSize,
                 }}
                 onClick={() => onNodeClick?.(path, value)}
             >
-                {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
-                <span className={`jt-value jt-${getValueType(value)}`}>{formatValue(value)}</span>
+                {keyName !== undefined && (
+                    <span className="jt-key">
+                        {highlightText(keyName, searchQuery, isCurrentKey)}:{' '}
+                    </span>
+                )}
+                <span className={`jt-value jt-${getValueType(value)}`}>
+                    {renderPrimitiveValue(value, searchQuery, isCurrentValue)}
+                </span>
             </div>
         )
     }
@@ -49,7 +65,7 @@ export function TreeNode({
     return (
         <div className="jt-node jt-branch" data-path={pathKey}>
             <div
-                className="jt-row"
+                className={`jt-row ${isCurrentRow ? 'jt-row-current' : ''}`}
                 style={{ paddingLeft: depth * indentSize || 4 }}
                 onClick={() => {
                     onToggle(pathKey)
@@ -57,7 +73,16 @@ export function TreeNode({
                 }}
             >
                 <span className="jt-toggle">{isEmpty ? ' ' : isExpanded ? '▼' : '▶'}</span>
-                {keyName !== undefined && <span className="jt-key">{keyName}: </span>}
+                {keyName !== undefined && (
+                    <span className="jt-key">
+                        {highlightText(
+                            keyName,
+                            searchQuery,
+                            isCurrentRow && currentMatch?.type === 'key'
+                        )}
+                        :{' '}
+                    </span>
+                )}
 
                 <span className="jt-bracket">{isArray ? '[' : '{'}</span>
                 {!isExpanded && <span className="jt-collapse-indicator">...</span>}
@@ -75,6 +100,8 @@ export function TreeNode({
                             onToggle={onToggle}
                             indentSize={indentSize}
                             onNodeClick={onNodeClick}
+                            searchQuery={searchQuery}
+                            currentMatch={currentMatch}
                         />
                     ))}
                 </>
@@ -93,10 +120,21 @@ function getValueType(value: JsonValue): string {
     return typeof value
 }
 
-function formatValue(value: JsonValue): string {
-    if (value === null) return 'null'
+function renderPrimitiveValue(value: JsonValue, query: string, isCurrent: boolean): ReactNode {
+    if (value === null) return highlightText('null', query, isCurrent)
+    if (typeof value === 'string') {
+        return (
+            <>
+                {'"'}
+                {highlightText(value, query, isCurrent)}
+                {'"'}
+            </>
+        )
+    }
+    if (typeof value === 'number' || typeof value === 'boolean') {
+        return highlightText(String(value), query, isCurrent)
+    }
     if (typeof value === 'object' && Array.isArray(value)) return '[]'
     if (typeof value === 'object') return '{}'
-    if (typeof value === 'string') return `"${value}"`
     return String(value)
 }

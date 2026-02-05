@@ -41,6 +41,10 @@ export interface JsonTreeViewRef {
     focusSearch: () => void
     /**Get all currently expanded paths */
     getExpandedPaths: () => Set<string>
+    /** Jump to next search match (if any) */
+    nextMatch: () => void
+    /** Jump to previous search match (if any) */
+    previousMatch: () => void
 }
 
 export interface SearchMatch {
