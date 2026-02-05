@@ -477,24 +477,31 @@ function App() {
 
                         <div className="pg-split" />
 
-                        <div className="pg-section-title">Coming soon</div>
+                        <div className="pg-section-title">Up Next</div>
                         <div className="pg-hint">
-                            {
-                                'These are placeholders for Phase 10+ (breadcrumb, keyboard navigation, etc.).'
-                            }
+                            Phase 12 is testing (Vitest + React Testing Library). After that we can
+                            harden accessibility, performance, and API surface.
                         </div>
                         <div className="pg-checkrow">
                             <label className="pg-check pg-check-disabled">
                                 <input type="checkbox" disabled />
-                                virtualized
+                                virtualization
                             </label>
                             <label className="pg-check pg-check-disabled">
                                 <input type="checkbox" disabled />
-                                keyboard nav
+                                sortKeys
                             </label>
                             <label className="pg-check pg-check-disabled">
                                 <input type="checkbox" disabled />
-                                sticky breadcrumb
+                                maxDepth
+                            </label>
+                            <label className="pg-check pg-check-disabled">
+                                <input type="checkbox" disabled />
+                                copy path
+                            </label>
+                            <label className="pg-check pg-check-disabled">
+                                <input type="checkbox" disabled />
+                                a11y polish
                             </label>
                         </div>
                     </div>
