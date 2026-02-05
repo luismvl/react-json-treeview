@@ -12,6 +12,7 @@ interface TreeNodeProps {
     onNodeClick?: (path: string[], value: JsonValue) => void
     searchQuery?: string
     currentMatch?: SearchMatch | null
+    focusedPathKey?: string
 }
 
 export function TreeNode({
@@ -24,6 +25,7 @@ export function TreeNode({
     onNodeClick,
     searchQuery = '',
     currentMatch = null,
+    focusedPathKey = '',
 }: TreeNodeProps) {
     const pathKey = path.join('.')
     const isExpanded = expandedPaths.has(pathKey)
@@ -32,6 +34,7 @@ export function TreeNode({
     const depth = path.length
     const currentMatchPathKey = currentMatch?.path.join('.') ?? null
     const isCurrentRow = currentMatchPathKey === pathKey
+    const isFocusedRow = focusedPathKey === pathKey
 
     // Render primtive values
     if (!isExpandable) {
@@ -39,8 +42,15 @@ export function TreeNode({
         const isCurrentKey = isCurrentRow && currentMatch?.type === 'key'
         return (
             <div
-                className={`jt-row jt-node jt-leaf ${isCurrentRow ? 'jt-row-current' : ''}`}
+                className={`jt-row jt-node jt-leaf ${isCurrentRow ? 'jt-row-current' : ''} ${
+                    isFocusedRow ? 'jt-row-focused' : ''
+                }`}
                 data-path={pathKey}
+                data-expandable="0"
+                role="treeitem"
+                aria-level={depth + 1}
+                aria-selected={isFocusedRow}
+                tabIndex={isFocusedRow ? 0 : -1}
                 style={{
                     paddingLeft: depth * indentSize,
                 }}
@@ -65,8 +75,17 @@ export function TreeNode({
     return (
         <div className="jt-node jt-branch">
             <div
-                className={`jt-row ${isCurrentRow ? 'jt-row-current' : ''}`}
+                className={`jt-row ${isCurrentRow ? 'jt-row-current' : ''} ${
+                    isFocusedRow ? 'jt-row-focused' : ''
+                }`}
                 data-path={pathKey}
+                data-expandable={isEmpty ? '0' : '1'}
+                data-expanded={isExpanded ? '1' : '0'}
+                role="treeitem"
+                aria-level={depth + 1}
+                aria-expanded={!isEmpty ? isExpanded : undefined}
+                aria-selected={isFocusedRow}
+                tabIndex={isFocusedRow ? 0 : -1}
                 style={{ paddingLeft: depth * indentSize || 4 }}
                 onClick={() => {
                     onToggle(pathKey)
@@ -103,6 +122,7 @@ export function TreeNode({
                             onNodeClick={onNodeClick}
                             searchQuery={searchQuery}
                             currentMatch={currentMatch}
+                            focusedPathKey={focusedPathKey}
                         />
                     ))}
                 </>

@@ -547,16 +547,32 @@ function App() {
                     <div className="pg-shortcuts">
                         <div className="pg-panel-title pg-panel-title-sub">Shortcuts</div>
                         <div className="pg-shortcut-row">
+                            <code>Ctrl/Cmd+F</code>
+                            <span>Focus search</span>
+                        </div>
+                        <div className="pg-shortcut-row">
                             <code>Enter</code>
-                            <span>Next match</span>
+                            <span>Toggle expand / next match (in search)</span>
                         </div>
                         <div className="pg-shortcut-row">
                             <code>Shift+Enter</code>
-                            <span>Previous match</span>
+                            <span>Previous match (in search)</span>
                         </div>
                         <div className="pg-shortcut-row">
                             <code>Escape</code>
                             <span>Clear search</span>
+                        </div>
+                        <div className="pg-shortcut-row">
+                            <code>↑ / ↓</code>
+                            <span>Move focus</span>
+                        </div>
+                        <div className="pg-shortcut-row">
+                            <code>← / →</code>
+                            <span>Collapse / expand</span>
+                        </div>
+                        <div className="pg-shortcut-row">
+                            <code>Home / End</code>
+                            <span>First / last</span>
                         </div>
                     </div>
                 </section>

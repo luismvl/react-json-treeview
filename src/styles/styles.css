@@ -60,6 +60,15 @@
     background: var(--jt-hover-bg);
 }
 
+.jt-row:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--jt-key-color) 55%, transparent);
+    outline-offset: 1px;
+}
+
+.jt-row-focused {
+    background: color-mix(in srgb, var(--jt-key-color) 10%, transparent);
+}
+
 .jt-toggle {
     width: 1em;
     display: inline-block;
