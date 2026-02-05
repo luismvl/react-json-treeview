@@ -350,10 +350,9 @@ export function ControlsPanel() {
 
                 <div className="pg-split" />
 
-                <div className="pg-section-title">Up Next</div>
+                <div className="pg-section-title">Future Ideas</div>
                 <div className="pg-hint">
-                    Next: pre-publish checks (npm pack, verify ESM/CJS/types/CSS), plus a11y polish
-                    and performance hardening.
+                    Potential features for future versions. None are currently planned.
                 </div>
                 <div className="pg-checkrow">
                     <label className="pg-check pg-check-disabled">

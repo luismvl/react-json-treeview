@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import { JsonTreeView } from '../src/JsonTreeView'
-import type { JsonPrimitive, JsonPrimitiveType } from '../src/types'
+import type { JsonPrimitive, JsonPrimitiveType, RenderValueContext } from '../src/types'
 import { usePlayground } from './PlaygroundContext'
 
 export function PreviewPanel() {
@@ -18,10 +18,13 @@ export function PreviewPanel() {
 
     const renderValue = useMemo(() => {
         if (renderValueMode === 'off') return undefined
-        return (value: JsonPrimitive, path: string[], type: JsonPrimitiveType) => {
+        return (
+            value: JsonPrimitive,
+            path: string[],
+            type: JsonPrimitiveType,
+            ctx: RenderValueContext
+        ) => {
             if (renderValueMode === 'numbers' && type !== 'number') return null
-
-            const title = path.length === 0 ? '(root)' : path.join('.')
 
             if (type === 'string') {
                 const s = value as string
@@ -33,24 +36,24 @@ export function PreviewPanel() {
                             href={s}
                             target="_blank"
                             rel="noreferrer"
-                            title={title}
+                            title={ctx.pathKey}
                             onClick={(e) => e.stopPropagation()}
                         >
-                            {s}
+                            {ctx.defaultRenderer()}
                         </a>
                     )
                 }
                 return (
-                    <span className="pg-chip pg-chip-string" title={title}>
-                        &quot;{s}&quot;
+                    <span className="pg-chip pg-chip-string" title={ctx.pathKey}>
+                        {ctx.defaultRenderer()}
                     </span>
                 )
             }
 
             if (type === 'number') {
                 return (
-                    <span className="pg-chip pg-chip-number" title={title}>
-                        {String(value)}
+                    <span className="pg-chip pg-chip-number" title={ctx.pathKey}>
+                        {ctx.defaultRenderer()}
                     </span>
                 )
             }
@@ -59,16 +62,16 @@ export function PreviewPanel() {
                 return (
                     <span
                         className={`pg-chip ${value ? 'pg-chip-true' : 'pg-chip-false'}`}
-                        title={title}
+                        title={ctx.pathKey}
                     >
-                        {String(value)}
+                        {ctx.defaultRenderer()}
                     </span>
                 )
             }
 
             return (
-                <span className="pg-chip pg-chip-null" title={title}>
-                    null
+                <span className="pg-chip pg-chip-null" title={ctx.pathKey}>
+                    {ctx.defaultRenderer()}
                 </span>
             )
         }
