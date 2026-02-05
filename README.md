@@ -53,22 +53,23 @@ function App() {
 
 All props from `JsonTreeViewProps`:
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `data` | `JsonValue` | (required) | JSON data to render |
-| `defaultExpanded` | `boolean` | `true` | Start with all expandable nodes expanded |
-| `theme` | `'light' \| 'dark' \| 'auto'` | `'auto'` | Color theme (`auto` follows system preference) |
-| `className` | `string` | - | Additional class on the root element |
-| `searchable` | `boolean` | `true` | Show the built-in search UI |
-| `showBreadcrumb` | `boolean` | `true` | Show the sticky breadcrumb |
-| `indentSize` | `number` | `20` | Indentation per depth level, in pixels |
-| `fontSize` | `number` | `13` | Font size, in pixels |
-| `onNodeClick` | `(path: string[], value: JsonValue) => void` | - | Called when a row is clicked |
-| `onSearchChange` | `(query: string, matches: SearchMatch[]) => void` | - | Called when search query/matches change |
-| `externalSearchQuery` | `string` | - | Controlled search query (disables editing in the built-in input) |
-| `renderValue` | `(value: JsonPrimitive, path: string[], type: JsonPrimitiveType, ctx: RenderValueContext) => ReactNode \| null` | - | Custom rendering for primitive leaf values; return `null` for default rendering |
+| Prop                  | Type                                                                                                                                | Default    | Description                                                                     |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------- |
+| `data`                | `JsonValue`                                                                                                                         | (required) | JSON data to render                                                             |
+| `defaultExpanded`     | `boolean`                                                                                                                           | `true`     | Start with all expandable nodes expanded                                        |
+| `theme`               | `'light' \| 'dark' \| 'auto'`                                                                                                       | `'auto'`   | Color theme (`auto` follows system preference)                                  |
+| `className`           | `string`                                                                                                                            | -          | Additional class on the root element                                            |
+| `searchable`          | `boolean`                                                                                                                           | `true`     | Show the built-in search UI                                                     |
+| `showBreadcrumb`      | `boolean`                                                                                                                           | `true`     | Show the sticky breadcrumb                                                      |
+| `indentSize`          | `number`                                                                                                                            | `20`       | Indentation per depth level, in pixels                                          |
+| `fontSize`            | `number`                                                                                                                            | `13`       | Font size, in pixels                                                            |
+| `onNodeClick`         | `(path: string[],`<br>`value: JsonValue)`<br>`=> void`                                                                              | -          | Called when a row is clicked                                                    |
+| `onSearchChange`      | `(query: string,`<br>`matches: SearchMatch[])`<br>`=> void`                                                                         | -          | Called when search query/matches change                                         |
+| `externalSearchQuery` | `string`                                                                                                                            | -          | Controlled search query (disables editing in the built-in input)                |
+| `renderValue`         | `(value: JsonPrimitive,`<br>`path: string[],`<br>`type: JsonPrimitiveType,`<br>`ctx: RenderValueContext)`<br>`=> ReactNode \| null` | -          | Custom rendering for primitive leaf values; return `null` for default rendering |
 
 Notes:
+
 - `path` uses object keys and array indices (as strings). Root is `[]`.
 - Search navigation (next/previous) expands parents and scrolls to the match.
 - `ctx.defaultRenderer()` preserves built-in rendering (including search highlighting).
@@ -99,32 +100,32 @@ Set `theme="light" | "dark" | "auto"` (default: `auto`). The component sets `dat
 
 Available CSS variables (defaults shown for light theme):
 
-| Variable | Purpose |
-|----------|---------|
-| `--js-font-family` | Font family for the viewer |
-| `--jt-line-height` | Line height |
-| `--jt-bg-color` | Background |
-| `--jt-text-color` | Default text |
-| `--jt-key-color` | Object keys |
-| `--jt-string-color` | String values |
-| `--jt-number-color` | Number values |
-| `--jt-boolean-color` | Boolean values |
-| `--jt-null-color` | Null values |
-| `--jt-bracket-color` | `{ }` and `[ ]` |
-| `--jt-toggle-color` | Expand/collapse toggles and ellipsis |
-| `--jt-hover-bg` | Row hover background |
-| `--jt-highlight-bg` | Search match highlight background |
-| `--jt-current-match-bg` | Current match highlight background |
-| `--jt-current-match-ring` | Current match outline color |
+| Variable                  | Purpose                              |
+| ------------------------- | ------------------------------------ |
+| `--js-font-family`        | Font family for the viewer           |
+| `--jt-line-height`        | Line height                          |
+| `--jt-bg-color`           | Background                           |
+| `--jt-text-color`         | Default text                         |
+| `--jt-key-color`          | Object keys                          |
+| `--jt-string-color`       | String values                        |
+| `--jt-number-color`       | Number values                        |
+| `--jt-boolean-color`      | Boolean values                       |
+| `--jt-null-color`         | Null values                          |
+| `--jt-bracket-color`      | `{ }` and `[ ]`                      |
+| `--jt-toggle-color`       | Expand/collapse toggles and ellipsis |
+| `--jt-hover-bg`           | Row hover background                 |
+| `--jt-highlight-bg`       | Search match highlight background    |
+| `--jt-current-match-bg`   | Current match highlight background   |
+| `--jt-current-match-ring` | Current match outline color          |
 
 Example override:
 
 ```css
 .react-json-treeview {
-  --jt-bg-color: white;
-  --jt-key-color: #0ea5e9;
-  --jt-string-color: #10b981;
-  --jt-number-color: #8b5cf6;
+    --jt-bg-color: white;
+    --jt-key-color: #0ea5e9;
+    --jt-string-color: #10b981;
+    --jt-number-color: #8b5cf6;
 }
 ```
 
@@ -132,23 +133,23 @@ Example override:
 
 ### Tree (when a row is focused)
 
-| Shortcut | Action |
-|----------|--------|
-| `ArrowUp` / `ArrowDown` | Move focus to previous/next visible row |
-| `Home` / `End` | Focus first/last visible row |
-| `Enter` / `Space` | Expand/collapse the focused row (if expandable) |
-| `ArrowRight` | Expand the focused row (if collapsed) |
-| `ArrowLeft` | Collapse the focused row (if expanded), otherwise focus parent |
-| `Ctrl+F` / `Cmd+F` | Focus search input (only when the event starts inside the component) |
-| `Escape` | Clear internal search query and focus search (uncontrolled search only) |
+| Shortcut                | Action                                                                  |
+| ----------------------- | ----------------------------------------------------------------------- |
+| `ArrowUp` / `ArrowDown` | Move focus to previous/next visible row                                 |
+| `Home` / `End`          | Focus first/last visible row                                            |
+| `Enter` / `Space`       | Expand/collapse the focused row (if expandable)                         |
+| `ArrowRight`            | Expand the focused row (if collapsed)                                   |
+| `ArrowLeft`             | Collapse the focused row (if expanded), otherwise focus parent          |
+| `Ctrl+F` / `Cmd+F`      | Focus search input (only when the event starts inside the component)    |
+| `Escape`                | Clear internal search query and focus search (uncontrolled search only) |
 
 ### Search input (when search UI is enabled)
 
-| Shortcut | Action |
-|----------|--------|
-| `Enter` | Jump to next match |
+| Shortcut      | Action                 |
+| ------------- | ---------------------- |
+| `Enter`       | Jump to next match     |
 | `Shift+Enter` | Jump to previous match |
-| `Escape` | Clear query |
+| `Escape`      | Clear query            |
 
 ## TypeScript
 
@@ -171,7 +172,7 @@ Custom value rendering with built-in highlighting:
 ```tsx
 import { JsonTreeView, highlightText } from 'react-json-treeview'
 
-<JsonTreeView
+;<JsonTreeView
     data={data}
     renderValue={(value, path, type, ctx) => {
         if (type === 'string') {
@@ -180,7 +181,11 @@ import { JsonTreeView, highlightText } from 'react-json-treeview'
 
         // Example for fully custom rendering using exported helper:
         if (type === 'number') {
-            return <strong>{highlightText(String(value), ctx.searchQuery, ctx.isCurrentValueMatch)}</strong>
+            return (
+                <strong>
+                    {highlightText(String(value), ctx.searchQuery, ctx.isCurrentValueMatch)}
+                </strong>
+            )
         }
 
         return null
