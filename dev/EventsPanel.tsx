@@ -1,17 +1,18 @@
 import React from 'react'
-import { formatTime, type LogItem } from './playgroundUtils'
+import { usePlayground } from './PlaygroundContext'
+import { formatTime } from './playgroundUtils'
 
-type Props = {
-    log: LogItem[]
-    onClear: () => void
-}
-
-export function EventsPanel({ log, onClear }: Props) {
+export function EventsPanel() {
+    const { log, actions } = usePlayground()
     return (
         <section className="pg-panel pg-log">
             <div className="pg-panel-title">Events</div>
             <div className="pg-log-actions">
-                <button type="button" className="pg-btn pg-btn-secondary" onClick={onClear}>
+                <button
+                    type="button"
+                    className="pg-btn pg-btn-secondary"
+                    onClick={actions.clearLog}
+                >
                     Clear
                 </button>
             </div>

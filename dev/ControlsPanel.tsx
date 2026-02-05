@@ -1,88 +1,26 @@
 import React from 'react'
-import type { JsonTreeViewRef } from '../src/types'
+import { usePlayground } from './PlaygroundContext'
 import type { DataPreset, Theme } from './presets'
 
-type Props = {
-    treeRef: React.RefObject<JsonTreeViewRef | null>
-
-    preset: DataPreset
-    setPreset: (v: DataPreset) => void
-    theme: Theme
-    setTheme: (v: Theme) => void
-
-    defaultExpanded: boolean
-    setDefaultExpanded: (v: boolean) => void
-    searchable: boolean
-    setSearchable: (v: boolean) => void
-    showBreadcrumb: boolean
-    setShowBreadcrumb: (v: boolean) => void
-
-    indentSize: number
-    setIndentSize: (v: number) => void
-    fontSize: number
-    setFontSize: (v: number) => void
-    viewerHeight: number
-    setViewerHeight: (v: number) => void
-
-    useExternalQuery: boolean
-    setUseExternalQuery: (v: boolean) => void
-    externalQuery: string
-    setExternalQuery: (v: string) => void
-
-    deepDepth: number
-    setDeepDepth: (v: number) => void
-    wideWidth: number
-    setWideWidth: (v: number) => void
-    bigGroups: number
-    setBigGroups: (v: number) => void
-    bigItemsPerGroup: number
-    setBigItemsPerGroup: (v: number) => void
-
-    jumpPathRaw: string
-    setJumpPathRaw: (v: string) => void
-    onJumpToPath: () => void
-    onLogExpandedCount: () => void
-
-    pushLog: (kind: 'info' | 'event' | 'warn', message: string) => void
-}
-
-export function ControlsPanel(props: Props) {
+export function ControlsPanel() {
+    const { state, setField, actions } = usePlayground()
     const {
-        treeRef,
         preset,
-        setPreset,
         theme,
-        setTheme,
         defaultExpanded,
-        setDefaultExpanded,
         searchable,
-        setSearchable,
         showBreadcrumb,
-        setShowBreadcrumb,
         indentSize,
-        setIndentSize,
         fontSize,
-        setFontSize,
         viewerHeight,
-        setViewerHeight,
         useExternalQuery,
-        setUseExternalQuery,
         externalQuery,
-        setExternalQuery,
         deepDepth,
-        setDeepDepth,
         wideWidth,
-        setWideWidth,
         bigGroups,
-        setBigGroups,
         bigItemsPerGroup,
-        setBigItemsPerGroup,
         jumpPathRaw,
-        setJumpPathRaw,
-        onJumpToPath,
-        onLogExpandedCount,
-        pushLog,
-    } = props
+    } = state
 
     return (
         <aside className="pg-panel pg-controls">
@@ -96,7 +34,7 @@ export function ControlsPanel(props: Props) {
                         id="preset"
                         className="pg-select"
                         value={preset}
-                        onChange={(e) => setPreset(e.target.value as DataPreset)}
+                        onChange={(e) => setField('preset', e.target.value as DataPreset)}
                     >
                         <option value="sample">Sample</option>
                         <option value="deep">Deep nesting</option>
@@ -118,7 +56,7 @@ export function ControlsPanel(props: Props) {
                             max={60}
                             step={1}
                             value={deepDepth}
-                            onChange={(e) => setDeepDepth(Number(e.target.value))}
+                            onChange={(e) => setField('deepDepth', Number(e.target.value))}
                         />
                     </div>
                 )}
@@ -136,7 +74,7 @@ export function ControlsPanel(props: Props) {
                             max={600}
                             step={10}
                             value={wideWidth}
-                            onChange={(e) => setWideWidth(Number(e.target.value))}
+                            onChange={(e) => setField('wideWidth', Number(e.target.value))}
                         />
                     </div>
                 )}
@@ -155,7 +93,7 @@ export function ControlsPanel(props: Props) {
                                 max={50}
                                 step={1}
                                 value={bigGroups}
-                                onChange={(e) => setBigGroups(Number(e.target.value))}
+                                onChange={(e) => setField('bigGroups', Number(e.target.value))}
                             />
                         </div>
                         <div className="pg-field">
@@ -170,7 +108,9 @@ export function ControlsPanel(props: Props) {
                                 max={60}
                                 step={1}
                                 value={bigItemsPerGroup}
-                                onChange={(e) => setBigItemsPerGroup(Number(e.target.value))}
+                                onChange={(e) =>
+                                    setField('bigItemsPerGroup', Number(e.target.value))
+                                }
                             />
                         </div>
                     </>
@@ -186,7 +126,7 @@ export function ControlsPanel(props: Props) {
                         id="theme"
                         className="pg-select"
                         value={theme}
-                        onChange={(e) => setTheme(e.target.value as Theme)}
+                        onChange={(e) => setField('theme', e.target.value as Theme)}
                     >
                         <option value="auto">Auto</option>
                         <option value="light">Light</option>
@@ -199,7 +139,7 @@ export function ControlsPanel(props: Props) {
                         <input
                             type="checkbox"
                             checked={defaultExpanded}
-                            onChange={(e) => setDefaultExpanded(e.target.checked)}
+                            onChange={(e) => setField('defaultExpanded', e.target.checked)}
                         />
                         defaultExpanded
                     </label>
@@ -207,7 +147,7 @@ export function ControlsPanel(props: Props) {
                         <input
                             type="checkbox"
                             checked={searchable}
-                            onChange={(e) => setSearchable(e.target.checked)}
+                            onChange={(e) => setField('searchable', e.target.checked)}
                             disabled={useExternalQuery}
                         />
                         searchable
@@ -216,7 +156,7 @@ export function ControlsPanel(props: Props) {
                         <input
                             type="checkbox"
                             checked={showBreadcrumb}
-                            onChange={(e) => setShowBreadcrumb(e.target.checked)}
+                            onChange={(e) => setField('showBreadcrumb', e.target.checked)}
                         />
                         showBreadcrumb
                     </label>
@@ -234,7 +174,7 @@ export function ControlsPanel(props: Props) {
                         max={36}
                         step={1}
                         value={indentSize}
-                        onChange={(e) => setIndentSize(Number(e.target.value))}
+                        onChange={(e) => setField('indentSize', Number(e.target.value))}
                     />
                 </div>
 
@@ -250,7 +190,7 @@ export function ControlsPanel(props: Props) {
                         max={18}
                         step={1}
                         value={fontSize}
-                        onChange={(e) => setFontSize(Number(e.target.value))}
+                        onChange={(e) => setField('fontSize', Number(e.target.value))}
                     />
                 </div>
 
@@ -266,7 +206,7 @@ export function ControlsPanel(props: Props) {
                         max={900}
                         step={10}
                         value={viewerHeight}
-                        onChange={(e) => setViewerHeight(Number(e.target.value))}
+                        onChange={(e) => setField('viewerHeight', Number(e.target.value))}
                     />
                 </div>
 
@@ -277,14 +217,14 @@ export function ControlsPanel(props: Props) {
                         <input
                             type="checkbox"
                             checked={useExternalQuery}
-                            onChange={(e) => setUseExternalQuery(e.target.checked)}
+                            onChange={(e) => setField('useExternalQuery', e.target.checked)}
                         />
                         externalSearchQuery (controlled)
                     </label>
                     <input
                         className="pg-input"
                         value={externalQuery}
-                        onChange={(e) => setExternalQuery(e.target.value)}
+                        onChange={(e) => setField('externalQuery', e.target.value)}
                         placeholder='Try "needle", "true", "null"...'
                         disabled={!useExternalQuery}
                         onKeyDown={(e) => {
@@ -292,16 +232,14 @@ export function ControlsPanel(props: Props) {
                             if (e.key === 'Enter') {
                                 e.preventDefault()
                                 if (e.shiftKey) {
-                                    treeRef.current?.previousMatch()
-                                    pushLog('event', 'ref.previousMatch()')
+                                    actions.previousMatch()
                                 } else {
-                                    treeRef.current?.nextMatch()
-                                    pushLog('event', 'ref.nextMatch()')
+                                    actions.nextMatch()
                                 }
                             } else if (e.key === 'Escape') {
                                 e.preventDefault()
-                                setExternalQuery('')
-                                pushLog('event', 'externalQuery cleared')
+                                setField('externalQuery', '')
+                                actions.pushLog('event', 'externalQuery cleared')
                             }
                         }}
                     />
@@ -309,10 +247,7 @@ export function ControlsPanel(props: Props) {
                         <button
                             type="button"
                             className="pg-btn"
-                            onClick={() => {
-                                treeRef.current?.previousMatch()
-                                pushLog('event', 'ref.previousMatch()')
-                            }}
+                            onClick={actions.previousMatch}
                             disabled={!useExternalQuery}
                         >
                             Prev match
@@ -320,10 +255,7 @@ export function ControlsPanel(props: Props) {
                         <button
                             type="button"
                             className="pg-btn"
-                            onClick={() => {
-                                treeRef.current?.nextMatch()
-                                pushLog('event', 'ref.nextMatch()')
-                            }}
+                            onClick={actions.nextMatch}
                             disabled={!useExternalQuery}
                         >
                             Next match
@@ -347,17 +279,17 @@ export function ControlsPanel(props: Props) {
                             id="jumpPath"
                             className="pg-input"
                             value={jumpPathRaw}
-                            onChange={(e) => setJumpPathRaw(e.target.value)}
+                            onChange={(e) => setField('jumpPathRaw', e.target.value)}
                             placeholder="e.g. address.city or hobbies.1"
                         />
-                        <button type="button" className="pg-btn" onClick={onJumpToPath}>
+                        <button type="button" className="pg-btn" onClick={actions.jumpToPath}>
                             Scroll
                         </button>
                     </div>
                     <button
                         type="button"
                         className="pg-btn pg-btn-secondary"
-                        onClick={onLogExpandedCount}
+                        onClick={actions.logExpandedCount}
                     >
                         Log Expanded Count
                     </button>
@@ -367,8 +299,7 @@ export function ControlsPanel(props: Props) {
 
                 <div className="pg-section-title">Up Next</div>
                 <div className="pg-hint">
-                    Phase 12 is testing (Vitest + React Testing Library). After that we can harden
-                    accessibility, performance, and API surface.
+                    Next: documentation pass, a11y polish, and performance hardening.
                 </div>
                 <div className="pg-checkrow">
                     <label className="pg-check pg-check-disabled">
