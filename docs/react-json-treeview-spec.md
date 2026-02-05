@@ -90,7 +90,7 @@ Main component for rendering JSON data.
 | `onNodeClick` | `(path: string[], value: JsonValue) => void` | - | Callback when node clicked |
 | `onSearchChange` | `(query: string, matches: SearchMatch[]) => void` | - | Callback on search |
 | `externalSearchQuery` | `string` | - | External search query (use with `searchable={false}`) |
-| `renderValue` | `(value: JsonPrimitive, path: string[], type: string) => ReactNode \| null` | - | Custom value renderer. Return `null` for default |
+| `renderValue` | `(value: JsonPrimitive, path: string[], type: JsonPrimitiveType, ctx: RenderValueContext) => ReactNode \| null` | - | Custom value renderer. Return `null` for default |
 | `virtualized` | `boolean` | `false` | Enable virtualization for large datasets |
 | `estimatedNodeHeight` | `number` | `24` | Estimated row height for virtualization |
 | `maxDepth` | `number` | `Infinity` | Maximum depth to render (TBD) |
@@ -126,6 +126,7 @@ ref.current?.getExpandedPaths(); // Set<string>
 ```typescript
 // Primitive JSON values
 type JsonPrimitive = string | number | boolean | null;
+type JsonPrimitiveType = 'string' | 'number' | 'boolean' | 'null';
 
 // JSON object
 type JsonObject = { [key: string]: JsonValue };
@@ -143,6 +144,20 @@ interface SearchMatch {
   value?: string;           // The matching value (if value matched)
   type: 'key' | 'value';    // Whether key or value matched
 }
+
+interface RenderValueContext {
+  defaultRenderer: () => ReactNode;
+  searchQuery: string;
+  isCurrentValueMatch: boolean;
+  pathKey: string;
+}
+
+type RenderValueFn = (
+  value: JsonPrimitive,
+  path: string[],
+  type: JsonPrimitiveType,
+  ctx: RenderValueContext
+) => ReactNode | null;
 
 // Ref interface for imperative control
 interface JsonTreeViewRef {
@@ -250,10 +265,13 @@ function ControlledSearch() {
 ```tsx
 <JsonTreeView
   data={data}
-  renderValue={(value, path, type) => {
+  renderValue={(value, path, type, ctx) => {
     // Custom rendering for specific paths
     if (path.join('.') === 'user.avatar') {
       return <img src={value} alt="avatar" className="w-8 h-8 rounded" />;
+    }
+    if (type === 'string') {
+      return <span title={ctx.pathKey}>{ctx.defaultRenderer()}</span>;
     }
     // Return null to use default rendering
     return null;
@@ -472,4 +490,3 @@ Decisions to make during development:
 - [ ] Export to various formats (YAML, TOML)
 - [ ] Inline editing mode
 - [ ] Drag-and-drop reordering
-
