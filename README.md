@@ -5,7 +5,7 @@ A lightweight, performant React JSON tree viewer with search, navigation, and st
 [![npm version](https://img.shields.io/npm/v/@luismvl/react-json-treeview)](https://www.npmjs.com/package/@luismvl/react-json-treeview)
 [![CI](https://github.com/luismvl/react-json-treeview/actions/workflows/ci.yml/badge.svg)](https://github.com/luismvl/react-json-treeview/actions/workflows/ci.yml)
 
-[**Live Playground**](https://luismvl.github.io/react-json-treeview/) · Status: early preview (current repo version: `0.1.1`).
+[**Live Playground**](https://luismvl.github.io/react-json-treeview/) · Status: stable (`1.x`) (current repo version: `1.0.0`).
 
 ![screenshot-1](assets/ss1.png)
 ![screenshot-2](assets/ss2.png)

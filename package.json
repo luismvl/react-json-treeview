@@ -1,6 +1,6 @@
 {
     "name": "@luismvl/react-json-treeview",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "description": "A lightweight, performant React JSON tree viewer with search, navigation, and sticky breadcrumbs.",
     "type": "module",
     "main": "./dist/index.cjs",

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-02-05
+
+### Changed
+
+- Declared the public API stable for `1.x` (component props, ref API, exported types, and helpers).
+- No breaking API changes from `0.1.1`; this release marks production-ready SemVer guarantees.
+
+### Added
+
+- GitHub Pages playground deployment workflow and related playground build configuration.
+- README live playground link and screenshots.
+
 ## [0.1.1] - 2026-02-05
 
 ### Fixed
