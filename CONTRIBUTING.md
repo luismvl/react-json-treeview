@@ -22,6 +22,8 @@ The dev server uses the `dev/` playground as its Vite root.
 npm run build
 npm run lint
 npm test
+npm run ci:verify
+npm run ci:smoke-tarball
 ```
 
 ## Project guidelines

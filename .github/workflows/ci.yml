@@ -22,57 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Verify source and package
+        run: npm run ci:verify
 
-      - name: Test
-        run: npm test
-
-      - name: Build
-        run: npm run build
-
-      - name: Pack dry-run
-        run: npm pack --dry-run
-
-      - name: Pack tarball
-        run: npm pack
-
-      - name: Tarball smoke test (ESM/CJS/types/CSS)
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          PKG_NAME=$(node -p "require('./package.json').name")
-          TARBALL=$(ls -t *.tgz | head -n1)
-          TMPDIR=$(mktemp -d)
-
-          cd "$TMPDIR"
-          npm init -y >/dev/null
-          npm i react react-dom >/dev/null
-          npm i "$GITHUB_WORKSPACE/$TARBALL" >/dev/null
-
-          cat > esm-check.mjs <<EOF
-          import { JsonTreeView, highlightText } from '$PKG_NAME'
-          console.log(typeof JsonTreeView, typeof highlightText)
-          EOF
-
-          cat > cjs-check.cjs <<EOF
-          const { JsonTreeView, highlightText } = require('$PKG_NAME')
-          console.log(typeof JsonTreeView, typeof highlightText)
-          EOF
-
-          cat > types-check.ts <<EOF
-          import type { JsonTreeViewProps, JsonTreeViewRef, RenderValueContext } from '$PKG_NAME'
-          const a: JsonTreeViewProps | undefined = undefined
-          const b: JsonTreeViewRef | undefined = undefined
-          const c: RenderValueContext | undefined = undefined
-          void a
-          void b
-          void c
-          EOF
-
-          node esm-check.mjs
-          node cjs-check.cjs
-          "$GITHUB_WORKSPACE/node_modules/.bin/tsc" types-check.ts --moduleResolution bundler --module ESNext --target ES2022 --noEmit
-          node -e "console.log(require.resolve('$PKG_NAME/styles.css'))"
-
+      - name: Smoke test packed tarball
+        run: npm run ci:smoke-tarball

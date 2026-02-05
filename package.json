@@ -26,6 +26,8 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage",
+        "ci:verify": "npm run lint && npm test && npm run build && npm pack --dry-run && npm pack",
+        "ci:smoke-tarball": "bash ./scripts/ci/smoke-tarball.sh",
         "prepublishOnly": "npm run lint && npm test && npm run build"
     },
     "author": "Luis Vela",
