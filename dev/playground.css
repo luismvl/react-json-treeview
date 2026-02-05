@@ -258,14 +258,22 @@ body {
 .pg-preview-inner {
     padding: 12px;
     display: flex;
+    flex-direction: column;
     min-height: 0;
+    flex: 1;
+}
+
+.pg-viewer {
+    min-height: 0;
+}
+
+.pg-viewer .react-json-treeview {
     height: 100%;
 }
 
 .pg-preview .react-json-treeview {
     border-radius: 12px;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-    flex: 1;
     min-height: 0;
 }
 

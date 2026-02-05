@@ -24,8 +24,23 @@
     background: var(--jt-bg-color);
     color: var(--jt-text-color);
     line-height: var(--jt-line-height);
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.jt-toolbar {
+    padding: 8px;
+    border-bottom: 1px solid color-mix(in srgb, var(--jt-text-color) 10%, transparent);
+    background: color-mix(in srgb, var(--jt-bg-color) 92%, transparent);
+}
+
+.jt-scroll {
     padding: 8px;
     overflow: auto;
+    min-height: 0;
+    flex: 1;
 }
 
 .jt-node {
@@ -79,17 +94,11 @@
 }
 
 .jt-search {
-    position: sticky;
-    top: 0;
-    z-index: 1;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 6px;
-    margin-bottom: 6px;
+    padding: 6px 0;
     border-radius: 6px;
-    background: color-mix(in srgb, var(--jt-bg-color) 92%, transparent);
-    backdrop-filter: blur(6px);
 }
 
 .jt-search input {
@@ -126,6 +135,42 @@
 .jt-search-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+.jt-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0 8px 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--jt-text-color) 10%, transparent);
+    margin-bottom: 6px;
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.jt-crumb-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.jt-crumb {
+    font: inherit;
+    color: color-mix(in srgb, var(--jt-text-color) 88%, transparent);
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.jt-crumb:hover {
+    text-decoration: underline;
+}
+
+.jt-crumb-separator {
+    color: color-mix(in srgb, var(--jt-text-color) 45%, transparent);
+    user-select: none;
 }
 
 .jt-mark {

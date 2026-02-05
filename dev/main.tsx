@@ -84,18 +84,19 @@ function nowId() {
 function App() {
     const treeRef = useRef<JsonTreeViewRef>(null)
 
-    const [preset, setPreset] = useState<DataPreset>('sample')
+    const [preset, setPreset] = useState<DataPreset>('deep')
     const [theme, setTheme] = useState<Theme>('auto')
     const [defaultExpanded, setDefaultExpanded] = useState(true)
     const [searchable, setSearchable] = useState(true)
     const [showBreadcrumb, setShowBreadcrumb] = useState(true)
     const [indentSize, setIndentSize] = useState(18)
     const [fontSize, setFontSize] = useState(13)
+    const [viewerHeight, setViewerHeight] = useState(520)
 
     const [useExternalQuery, setUseExternalQuery] = useState(false)
     const [externalQuery, setExternalQuery] = useState('needle')
 
-    const [deepDepth, setDeepDepth] = useState(18)
+    const [deepDepth, setDeepDepth] = useState(26)
     const [wideWidth, setWideWidth] = useState(120)
     const [bigGroups, setBigGroups] = useState(15)
     const [bigItemsPerGroup, setBigItemsPerGroup] = useState(25)
@@ -352,6 +353,22 @@ function App() {
                             />
                         </div>
 
+                        <div className="pg-field">
+                            <label className="pg-label" htmlFor="viewerHeight">
+                                viewerHeight ({viewerHeight}px)
+                            </label>
+                            <input
+                                id="viewerHeight"
+                                className="pg-range"
+                                type="range"
+                                min={240}
+                                max={900}
+                                step={10}
+                                value={viewerHeight}
+                                onChange={(e) => setViewerHeight(Number(e.target.value))}
+                            />
+                        </div>
+
                         <div className="pg-split" />
 
                         <div className="pg-field">
@@ -486,19 +503,21 @@ function App() {
                 <main className="pg-panel pg-preview">
                     <div className="pg-panel-title">Preview</div>
                     <div className="pg-preview-inner">
-                        <JsonTreeView
-                            ref={treeRef}
-                            data={data}
-                            theme={theme}
-                            defaultExpanded={defaultExpanded}
-                            searchable={effectiveSearchable}
-                            showBreadcrumb={showBreadcrumb}
-                            indentSize={indentSize}
-                            fontSize={fontSize}
-                            externalSearchQuery={useExternalQuery ? externalQuery : undefined}
-                            onNodeClick={handleNodeClick}
-                            onSearchChange={handleSearchChange}
-                        />
+                        <div className="pg-viewer" style={{ height: viewerHeight }}>
+                            <JsonTreeView
+                                ref={treeRef}
+                                data={data}
+                                theme={theme}
+                                defaultExpanded={defaultExpanded}
+                                searchable={effectiveSearchable}
+                                showBreadcrumb={showBreadcrumb}
+                                indentSize={indentSize}
+                                fontSize={fontSize}
+                                externalSearchQuery={useExternalQuery ? externalQuery : undefined}
+                                onNodeClick={handleNodeClick}
+                                onSearchChange={handleSearchChange}
+                            />
+                        </div>
                     </div>
                 </main>
 

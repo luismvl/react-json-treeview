@@ -10,10 +10,14 @@ React JSON tree viewer library with search, navigation, and sticky breadcrumbs. 
 
 - `src/JsonTreeView.tsx` - Main exported component, manages expand/collapse state
 - `src/JsonTree.tsx` - Recursive `TreeNode` component for rendering
+- `src/Breadcrumb.tsx` - Sticky breadcrumb renderer (Phase 10)
+- `src/SearchBar.tsx` - Search input + next/prev UI (Phase 9)
+- `src/useSearch.ts` - Search matching + navigation state (Phase 9)
+- `src/highlightText.tsx` - `<mark>` helper for highlighting matches (Phase 9/10)
 - `src/types.ts` - All TypeScript types (`JsonValue`, `JsonTreeViewProps`, etc.)
 - `docs/react-json-treeview-spec.md` - Full API specification and planned features
 - `_notes/PROGRESS.md` - Current implementation status
-- `dev/main.tsx` - Development sandbox (not shipped)
+- `dev/main.tsx` - Development playground (not shipped)
 
 ## Development Commands
 
@@ -46,6 +50,15 @@ Tree nodes are rendered recursively. Each `TreeNode` receives the full `expanded
 
 Paths are stored as dot-joined strings (e.g., `"address.city"`). Root level has empty path `[]`.
 
+### Scroll Container
+
+The viewer is structured as:
+
+- `.jt-toolbar` (sticky-like header inside the component): breadcrumb + search UI
+- `.jt-scroll` (scroll container): holds the tree, used as `IntersectionObserver` root when scrollable
+
+Breadcrumb tracking observes `.jt-row[data-path]` elements.
+
 ### Type Guards
 
 Use `typeof` and `Array.isArray()` for JSON type detection:
@@ -57,6 +70,13 @@ const isExpandable = value !== null && typeof value === 'object' && Object.entri
 ### CSS Class Naming
 
 Prefix all classes with `jt-` (e.g., `jt-node`, `jt-key`, `jt-value`, `jt-null`).
+
+### Ref API
+
+`JsonTreeViewRef` includes:
+
+- `expandAll`, `collapseAll`, `scrollToPath`, `focusSearch`, `getExpandedPaths`
+- `nextMatch`, `previousMatch` (search navigation)
 
 ## Conventions
 
@@ -77,10 +97,8 @@ Vite is configured differently for dev vs build:
 
 Per `_notes/PROGRESS.md`, these are still TODO:
 
-- Styling/theming (Phase 6)
-- forwardRef/imperative API (Phase 8)
-- Search feature (Phase 9)
-- Breadcrumb (Phase 10)
 - Keyboard navigation (Phase 11)
+- Testing (Phase 12)
+- Documentation pass (Phase 13+)
 
 Consult `_notes/phases/` for detailed implementation guidance when working on these features.

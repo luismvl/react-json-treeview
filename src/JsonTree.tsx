@@ -63,9 +63,10 @@ export function TreeNode({
     const isEmpty = entries.length === 0
 
     return (
-        <div className="jt-node jt-branch" data-path={pathKey}>
+        <div className="jt-node jt-branch">
             <div
                 className={`jt-row ${isCurrentRow ? 'jt-row-current' : ''}`}
+                data-path={pathKey}
                 style={{ paddingLeft: depth * indentSize || 4 }}
                 onClick={() => {
                     onToggle(pathKey)
