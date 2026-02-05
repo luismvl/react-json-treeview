@@ -1,5 +1,26 @@
 import { useCallback } from 'react'
 
+function scrollElementIntoContainer(
+    container: HTMLElement,
+    element: HTMLElement,
+    align: ScrollLogicalPosition
+) {
+    const containerRect = container.getBoundingClientRect()
+    const elementRect = element.getBoundingClientRect()
+    const relativeTop = elementRect.top - containerRect.top + container.scrollTop
+
+    let targetScroll: number
+    if (align === 'start') {
+        targetScroll = relativeTop
+    } else if (align === 'end') {
+        targetScroll = relativeTop - containerRect.height + elementRect.height
+    } else {
+        targetScroll = relativeTop - containerRect.height / 2 + elementRect.height / 2
+    }
+
+    container.scrollTo({ top: targetScroll, behavior: 'smooth' })
+}
+
 export function useScrollToPath(
     scrollContainerRef: React.RefObject<HTMLElement | null>,
     setExpandedPaths: React.Dispatch<React.SetStateAction<Set<string>>>
@@ -7,11 +28,11 @@ export function useScrollToPath(
     return useCallback(
         (path: string[], opts?: { align?: ScrollLogicalPosition }) => {
             const align: ScrollLogicalPosition = opts?.align ?? 'center'
-            const root = scrollContainerRef.current
-            if (!root) return
+            const container = scrollContainerRef.current
+            if (!container) return
 
             if (path.length === 0) {
-                root.scrollTo({ top: 0, behavior: 'smooth' })
+                container.scrollTo({ top: 0, behavior: 'smooth' })
                 return
             }
 
@@ -26,9 +47,9 @@ export function useScrollToPath(
                 requestAnimationFrame(() => {
                     const pathKey = path.join('.')
                     const row =
-                        root.querySelector<HTMLElement>(`.jt-row[data-path="${pathKey}"]`) ??
-                        root.querySelector<HTMLElement>(`[data-path="${pathKey}"]`)
-                    if (row) row.scrollIntoView({ behavior: 'smooth', block: align })
+                        container.querySelector<HTMLElement>(`.jt-row[data-path="${pathKey}"]`) ??
+                        container.querySelector<HTMLElement>(`[data-path="${pathKey}"]`)
+                    if (row) scrollElementIntoContainer(container, row, align)
                 })
             })
         },
