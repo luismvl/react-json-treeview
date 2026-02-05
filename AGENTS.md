@@ -28,6 +28,7 @@ npm run lint       # ESLint check
 npm run lint:fix   # ESLint auto-fix
 npm test           # Run tests once
 npm run test:watch # Watch mode
+npm run test:coverage # Coverage report
 ```
 
 ## Code Patterns
@@ -88,6 +89,16 @@ Prefix all classes with `jt-` (e.g., `jt-node`, `jt-key`, `jt-value`, `jt-null`)
 - `expandAll`, `collapseAll`, `scrollToPath`, `focusSearch`, `getExpandedPaths`
 - `nextMatch`, `previousMatch` (search navigation)
 
+## Testing
+
+Tests live in `tests/` and run with Vitest + React Testing Library in `jsdom`.
+
+- Config: `vitest.config.ts`
+- Setup: `tests/setup.ts` (mocks `IntersectionObserver` + scroll methods for jsdom)
+- Typechecking in VSCode:
+  - `tests/tsconfig.json` adds `vitest/globals` + `@testing-library/jest-dom` matcher typings
+  - `tests/vitest.d.ts` imports `@testing-library/jest-dom/vitest`
+
 ## Conventions
 
 - **No barrel files** - Import directly from source files, not from `index.ts`
@@ -108,7 +119,6 @@ Vite is configured differently for dev vs build:
 
 Per `_notes/PROGRESS.md`, these are still TODO:
 
-- Testing (Phase 12)
 - Documentation pass (Phase 13+)
 
 Consult `_notes/phases/` for detailed implementation guidance when working on these features.
