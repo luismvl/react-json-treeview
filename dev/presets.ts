@@ -1,7 +1,7 @@
 import type { JsonValue } from '../src/types'
 
 export type Theme = 'light' | 'dark' | 'auto'
-export type DataPreset = 'sample' | 'deep' | 'wide' | 'big'
+export type DataPreset = 'sample' | 'deep' | 'wide' | 'big' | 'custom'
 
 export const sampleData: JsonValue = {
     name: 'John',

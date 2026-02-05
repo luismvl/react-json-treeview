@@ -25,6 +25,15 @@ function App() {
                     <button type="button" className="pg-btn" onClick={actions.collapseAll}>
                         Collapse All
                     </button>
+                    <button type="button" className="pg-btn" onClick={actions.focusSearch}>
+                        Focus Search
+                    </button>
+                    <button type="button" className="pg-btn" onClick={actions.previousMatch}>
+                        Prev Match
+                    </button>
+                    <button type="button" className="pg-btn" onClick={actions.nextMatch}>
+                        Next Match
+                    </button>
                 </div>
             </header>
 

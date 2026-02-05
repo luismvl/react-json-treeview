@@ -186,6 +186,32 @@ body {
     outline: none;
 }
 
+.pg-textarea {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--pg-text);
+    outline: none;
+    resize: vertical;
+    font-family:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New',
+        monospace;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.pg-textarea:focus {
+    border-color: rgba(134, 191, 242, 0.5);
+    box-shadow: 0 0 0 2px rgba(134, 191, 242, 0.18);
+}
+
+.pg-error {
+    font-size: 12px;
+    color: rgba(255, 173, 186, 0.92);
+    line-height: 1.35;
+}
+
 .pg-input::placeholder {
     color: rgba(255, 255, 255, 0.45);
 }
@@ -275,6 +301,49 @@ body {
     border-radius: 12px;
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
     min-height: 0;
+}
+
+.react-json-treeview .pg-link {
+    color: color-mix(in srgb, var(--jt-key-color) 82%, white);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.react-json-treeview .pg-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.react-json-treeview .pg-chip-number {
+    background: rgba(134, 191, 242, 0.14);
+    border-color: rgba(134, 191, 242, 0.25);
+}
+
+.react-json-treeview .pg-chip-string {
+    background: rgba(246, 193, 119, 0.12);
+    border-color: rgba(246, 193, 119, 0.25);
+}
+
+.react-json-treeview .pg-chip-true {
+    background: rgba(34, 197, 94, 0.16);
+    border-color: rgba(34, 197, 94, 0.28);
+}
+
+.react-json-treeview .pg-chip-false {
+    background: rgba(239, 68, 68, 0.16);
+    border-color: rgba(239, 68, 68, 0.28);
+}
+
+.react-json-treeview .pg-chip-null {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.14);
+    font-style: italic;
 }
 
 .pg-preview {

@@ -1,9 +1,9 @@
 import React from 'react'
-import { usePlayground } from './PlaygroundContext'
+import { usePlayground, type RenderValueMode } from './PlaygroundContext'
 import type { DataPreset, Theme } from './presets'
 
 export function ControlsPanel() {
-    const { state, setField, actions } = usePlayground()
+    const { state, setField, actions, dataError } = usePlayground()
     const {
         preset,
         theme,
@@ -15,10 +15,12 @@ export function ControlsPanel() {
         viewerHeight,
         useExternalQuery,
         externalQuery,
+        renderValueMode,
         deepDepth,
         wideWidth,
         bigGroups,
         bigItemsPerGroup,
+        customJsonRaw,
         jumpPathRaw,
     } = state
 
@@ -40,8 +42,35 @@ export function ControlsPanel() {
                         <option value="deep">Deep nesting</option>
                         <option value="wide">Wide object</option>
                         <option value="big">Big dataset</option>
+                        <option value="custom">Custom JSON</option>
                     </select>
                 </div>
+
+                {preset === 'custom' && (
+                    <div className="pg-field">
+                        <label className="pg-label" htmlFor="customJson">
+                            Custom JSON
+                        </label>
+                        <textarea
+                            id="customJson"
+                            className="pg-textarea"
+                            value={customJsonRaw}
+                            onChange={(e) => setField('customJsonRaw', e.target.value)}
+                            spellCheck={false}
+                            rows={10}
+                        />
+                        {dataError ? (
+                            <div className="pg-error">
+                                Invalid JSON (showing last valid value): {dataError}
+                            </div>
+                        ) : (
+                            <div className="pg-hint">
+                                Tip: include values like <code>true</code>, <code>null</code>, and
+                                strings containing <code>needle</code> to exercise search.
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {preset === 'deep' && (
                     <div className="pg-field">
@@ -213,6 +242,30 @@ export function ControlsPanel() {
                 <div className="pg-split" />
 
                 <div className="pg-field">
+                    <label className="pg-label" htmlFor="renderValueMode">
+                        renderValue demo
+                    </label>
+                    <select
+                        id="renderValueMode"
+                        className="pg-select"
+                        value={renderValueMode}
+                        onChange={(e) =>
+                            setField('renderValueMode', e.target.value as RenderValueMode)
+                        }
+                    >
+                        <option value="off">Off</option>
+                        <option value="numbers">Numbers only</option>
+                        <option value="all">All primitives</option>
+                    </select>
+                    <div className="pg-hint">
+                        This uses the public <code>renderValue</code> prop. Returning a custom node
+                        overrides the default formatting/highlighting for that value.
+                    </div>
+                </div>
+
+                <div className="pg-split" />
+
+                <div className="pg-field">
                     <label className="pg-check">
                         <input
                             type="checkbox"
@@ -299,7 +352,8 @@ export function ControlsPanel() {
 
                 <div className="pg-section-title">Up Next</div>
                 <div className="pg-hint">
-                    Next: documentation pass, a11y polish, and performance hardening.
+                    Next: pre-publish checks (npm pack, verify ESM/CJS/types/CSS), plus a11y polish
+                    and performance hardening.
                 </div>
                 <div className="pg-checkrow">
                     <label className="pg-check pg-check-disabled">

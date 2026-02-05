@@ -4,6 +4,8 @@ import { buildBigData, buildDeepData, buildWideData, sampleData } from './preset
 import type { DataPreset, Theme } from './presets'
 import { formatPathInput, nowId, safePreview, type LogItem } from './playgroundUtils'
 
+export type RenderValueMode = 'off' | 'numbers' | 'all'
+
 export type PlaygroundState = {
     preset: DataPreset
     theme: Theme
@@ -15,10 +17,14 @@ export type PlaygroundState = {
     viewerHeight: number
     useExternalQuery: boolean
     externalQuery: string
+    renderValueMode: RenderValueMode
     deepDepth: number
     wideWidth: number
     bigGroups: number
     bigItemsPerGroup: number
+    customJsonRaw: string
+    customJsonLastValid: JsonValue
+    customJsonError?: string
     jumpPathRaw: string
 }
 
@@ -28,6 +34,24 @@ type StateAction =
 
 function stateReducer(state: PlaygroundState, action: StateAction): PlaygroundState {
     if (action.type === 'set') {
+        if (action.key === 'customJsonRaw') {
+            const raw = String(action.value)
+            try {
+                const parsed = JSON.parse(raw) as JsonValue
+                return {
+                    ...state,
+                    customJsonRaw: raw,
+                    customJsonLastValid: parsed,
+                    customJsonError: undefined,
+                }
+            } catch (e) {
+                return {
+                    ...state,
+                    customJsonRaw: raw,
+                    customJsonError: e instanceof Error ? e.message : String(e),
+                }
+            }
+        }
         if (Object.is(state[action.key], action.value)) return state
         return { ...state, [action.key]: action.value } as PlaygroundState
     }
@@ -53,6 +77,7 @@ type PlaygroundContextValue = {
     setField: <K extends keyof PlaygroundState>(key: K, value: PlaygroundState[K]) => void
 
     data: JsonValue
+    dataError?: string
     externalSearchQuery?: string
 
     log: LogItem[]
@@ -63,6 +88,7 @@ type PlaygroundContextValue = {
 
         expandAll: () => void
         collapseAll: () => void
+        focusSearch: () => void
         nextMatch: () => void
         previousMatch: () => void
 
@@ -87,10 +113,14 @@ const defaultState: PlaygroundState = {
     viewerHeight: 520,
     useExternalQuery: false,
     externalQuery: 'needle',
+    renderValueMode: 'off',
     deepDepth: 26,
     wideWidth: 120,
     bigGroups: 15,
     bigItemsPerGroup: 25,
+    customJsonRaw: JSON.stringify(sampleData, null, 2),
+    customJsonLastValid: sampleData,
+    customJsonError: undefined,
     jumpPathRaw: 'address.city',
 }
 
@@ -123,12 +153,22 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
         dispatchLog({ type: 'clear' })
     }, [])
 
+    const dataError = state.preset === 'custom' ? state.customJsonError : undefined
+
     const data: JsonValue = useMemo(() => {
         if (state.preset === 'sample') return sampleData
         if (state.preset === 'deep') return buildDeepData(state.deepDepth)
         if (state.preset === 'wide') return buildWideData(state.wideWidth)
-        return buildBigData(state.bigGroups, state.bigItemsPerGroup)
-    }, [state.preset, state.deepDepth, state.wideWidth, state.bigGroups, state.bigItemsPerGroup])
+        if (state.preset === 'big') return buildBigData(state.bigGroups, state.bigItemsPerGroup)
+        return state.customJsonLastValid
+    }, [
+        state.preset,
+        state.deepDepth,
+        state.wideWidth,
+        state.bigGroups,
+        state.bigItemsPerGroup,
+        state.customJsonLastValid,
+    ])
 
     const externalSearchQuery = state.useExternalQuery ? state.externalQuery : undefined
 
@@ -140,6 +180,11 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
     const collapseAll = useCallback(() => {
         treeRef.current?.collapseAll()
         pushLog('event', 'ref.collapseAll()')
+    }, [pushLog])
+
+    const focusSearch = useCallback(() => {
+        treeRef.current?.focusSearch()
+        pushLog('event', 'ref.focusSearch()')
     }, [pushLog])
 
     const nextMatch = useCallback(() => {
@@ -183,6 +228,7 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
             clearLog,
             expandAll,
             collapseAll,
+            focusSearch,
             nextMatch,
             previousMatch,
             jumpToPath,
@@ -195,6 +241,7 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
             clearLog,
             expandAll,
             collapseAll,
+            focusSearch,
             nextMatch,
             previousMatch,
             jumpToPath,
@@ -210,11 +257,12 @@ export function PlaygroundProvider({ children }: { children: React.ReactNode }) 
             state,
             setField,
             data,
+            dataError,
             externalSearchQuery,
             log,
             actions,
         }),
-        [state, setField, data, externalSearchQuery, log, actions]
+        [state, setField, data, dataError, externalSearchQuery, log, actions]
     )
 
     return <PlaygroundContext.Provider value={value}>{children}</PlaygroundContext.Provider>
