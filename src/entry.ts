@@ -1,3 +1,5 @@
+import './styles/styles.css'
+
 export { JsonTreeView } from './JsonTreeView'
 export { highlightText } from './highlightText'
 export type {

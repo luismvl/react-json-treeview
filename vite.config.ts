@@ -22,6 +22,7 @@ export default defineConfig(({ command }) => ({
             name: 'ReactJsonTreeview',
             formats: ['es', 'cjs'],
             fileName: (format) => `index.${format === 'es' ? 'js' : 'cjs'}`,
+            cssFileName: 'styles',
         },
         rollupOptions: {
             external: ['react', 'react-dom', 'react/jsx-runtime'],

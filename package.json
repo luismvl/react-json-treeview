@@ -1,6 +1,6 @@
 {
     "name": "react-json-treeview",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "A lightweight, performant React JSON tree viewer with search, navigation, and sticky breadcrumbs.",
     "type": "module",
     "main": "./dist/index.cjs",
@@ -27,8 +27,24 @@
         "test:watch": "vitest",
         "test:coverage": "vitest run --coverage"
     },
-    "author": "",
+    "author": "Luis Vela",
     "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/luismvl/react-json-treeview.git"
+    },
+    "homepage": "https://github.com/luismvl/react-json-treeview#readme",
+    "bugs": {
+        "url": "https://github.com/luismvl/react-json-treeview/issues"
+    },
+    "keywords": [
+        "react",
+        "json",
+        "tree",
+        "viewer",
+        "search",
+        "typescript"
+    ],
     "devDependencies": {
         "@eslint/js": "^9.39.2",
         "@testing-library/jest-dom": "^6.9.1",
