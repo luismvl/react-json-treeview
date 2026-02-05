@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-02-05
+
+### Fixed
+
+- Synchronized README install/import examples with the published scoped package name (`@luismvl/react-json-treeview`).
+- Updated README status version to match the current published line.
+
+### Added
+
+- CI workflow (`.github/workflows/ci.yml`) with pre-publish checks:
+- `lint`, `test`, `build`, `npm pack --dry-run`, and tarball smoke tests for ESM/CJS/types/CSS.
+- `prepublishOnly` script to enforce local release checks before publishing.
+- `engines.node` metadata (`>=18`) in `package.json`.
+
 ## [0.1.0] - 2026-02-05
 
 ### Added

@@ -2,7 +2,10 @@
 
 A lightweight, performant React JSON tree viewer with search, navigation, and sticky breadcrumbs.
 
-Status: early preview (current repo version: `0.0.1`).
+[![npm version](https://img.shields.io/npm/v/@luismvl/react-json-treeview)](https://www.npmjs.com/package/@luismvl/react-json-treeview)
+[![CI](https://github.com/luismvl/react-json-treeview/actions/workflows/ci.yml/badge.svg)](https://github.com/luismvl/react-json-treeview/actions/workflows/ci.yml)
+
+Status: early preview (current repo version: `0.1.1`).
 
 ## Features
 
@@ -18,11 +21,11 @@ Status: early preview (current repo version: `0.0.1`).
 ## Installation
 
 ```bash
-npm install react-json-treeview
+npm install @luismvl/react-json-treeview
 # or
-pnpm add react-json-treeview
+pnpm add @luismvl/react-json-treeview
 # or
-yarn add react-json-treeview
+yarn add @luismvl/react-json-treeview
 ```
 
 Peer dependencies: `react` and `react-dom` (React 18 or 19).
@@ -30,8 +33,8 @@ Peer dependencies: `react` and `react-dom` (React 18 or 19).
 ## Quick Start
 
 ```tsx
-import { JsonTreeView } from 'react-json-treeview'
-import 'react-json-treeview/styles.css'
+import { JsonTreeView } from '@luismvl/react-json-treeview'
+import '@luismvl/react-json-treeview/styles.css'
 
 function App() {
     const data = {
@@ -80,8 +83,8 @@ Use a ref for imperative control:
 
 ```tsx
 import { useRef } from 'react'
-import { JsonTreeView } from 'react-json-treeview'
-import type { JsonTreeViewRef } from 'react-json-treeview'
+import { JsonTreeView } from '@luismvl/react-json-treeview'
+import type { JsonTreeViewRef } from '@luismvl/react-json-treeview'
 
 const ref = useRef<JsonTreeViewRef>(null)
 
@@ -164,15 +167,15 @@ import type {
     RenderValueFn,
     SearchMatch,
     JsonTreeViewRef,
-} from 'react-json-treeview'
+} from '@luismvl/react-json-treeview'
 ```
 
 Custom value rendering with built-in highlighting:
 
 ```tsx
-import { JsonTreeView, highlightText } from 'react-json-treeview'
+import { JsonTreeView, highlightText } from '@luismvl/react-json-treeview'
 
-;<JsonTreeView
+<JsonTreeView
     data={data}
     renderValue={(value, path, type, ctx) => {
         if (type === 'string') {
